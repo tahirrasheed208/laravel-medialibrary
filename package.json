@@ -1,0 +1,25 @@
+{
+  "name": "laravel-medialibrary",
+  "version": "1.0.0",
+  "description": "This package can associate images with Eloquent models.",
+  "main": "index.js",
+  "scripts": {
+    "production": "cross-env NODE_ENV=production webpack --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://tahirrasheed208@github.com/tahirrasheed208/laravel-medialibrary.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tahirrasheed208/laravel-medialibrary/issues"
+  },
+  "homepage": "https://github.com/tahirrasheed208/laravel-medialibrary#readme",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "laravel-mix": "^6.0.49"
+  }
+}

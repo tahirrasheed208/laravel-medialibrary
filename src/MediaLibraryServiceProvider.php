@@ -3,6 +3,7 @@
 namespace TahirRasheed\MediaLibrary;
 
 use Illuminate\Support\ServiceProvider;
+use TahirRasheed\MediaLibrary\View\Components\FileUpload;
 
 class MediaLibraryServiceProvider extends ServiceProvider
 {
@@ -30,9 +31,14 @@ class MediaLibraryServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'medialibrary');
 
         $this->publishes([
             __DIR__.'/../config/medialibrary.php' => config_path('medialibrary.php'),
         ], 'config');
+
+        $this->loadViewComponentsAs('medialibrary', [
+            FileUpload::class,
+        ]);
     }
 }

@@ -1,6 +1,9 @@
 /node_modules
+/docs
 /vendor
 composer.lock
+package-lock.json
+mix-manifest.json
 .phpunit.result.cache
 npm-debug.log
 yarn-error.log
