@@ -8,6 +8,7 @@ class MediaObserver
 {
     public function deleted(Media $media)
     {
-        dd($media);
+        // dump($media->attachment);
+        // dd($media);
     }
 }

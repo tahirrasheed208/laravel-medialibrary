@@ -9,7 +9,8 @@ use TahirRasheed\MediaLibrary\Models\Media;
 class MediaHelper
 {
     protected string $disk = config('filesystems.default');
-    protected string $collection_name;
+    protected string $collection_name = '';
+    protected $model;
 
     public function disk(string $disk): MediaHelper
     {
@@ -27,7 +28,9 @@ class MediaHelper
 
     public function handle(array $request, string $type, ?Model $model = null): bool
     {
-        $this->deleteOldFileIfRequested($request, $type, $model);
+        $this->model = $model;
+
+        $this->deleteOldFileIfRequested($request, $type);
 
         if (! isset($request[$type])) {
             return false;
@@ -35,11 +38,11 @@ class MediaHelper
 
         $uploaded_file = $this->upload($request[$type]);
 
-        if (! $model) {
+        if (! $this->model) {
             return true;
         }
 
-        $model->attachments()->create([
+        $this->model->attachments()->create([
             'media_id' => $uploaded_file['media_id'],
             'type' => $type,
             'sort_order' => $model->attachments()->whereType($type)->count() + 1,
@@ -50,7 +53,7 @@ class MediaHelper
 
     public function upload(UploadedFile $file): array
     {
-        $file->store($this->getCollectionUploadPath(), $this->disk);
+        $file->store($this->getFileUploadPath(), $this->disk);
 
         $media = Media::create([
             'file_name' => $file->hashName(),
@@ -67,7 +70,7 @@ class MediaHelper
         ];
     }
 
-    protected function deleteOldFileIfRequested(array $request, string $type, ?Model $model = null): void
+    protected function deleteOldFileIfRequested(array $request, string $type): void
     {
         if (! isset($request['remove_' . $type])) {
             return;
@@ -77,7 +80,7 @@ class MediaHelper
             return;
         }
 
-        $attachment = $model->attachments()->whereType($type)->first();
+        $attachment = $this->model->attachments()->whereType($type)->first();
 
         $this->delete($attachment->media);
     }
@@ -91,14 +94,25 @@ class MediaHelper
         $model->delete();
     }
 
-    protected function getCollectionUploadPath(): string
+    protected function getFileUploadPath(): string
     {
-        $collection = '';
+        $collection = $this->collection_name;
 
-        if ($this->collection_name) {
-            $collection = $this->collection_name;
+        if (! $this->collection_name) {
+            $collection = $this->getCollectionFromModel();
         }
 
         return $collection . DIRECTORY_SEPARATOR . 'original';
+    }
+
+    protected function getCollectionFromModel(): string
+    {
+        if (! $this->model) {
+            return '';
+        }
+
+        $collection = $this->model->collection();
+
+        return Str::kebab($collection);
     }
 }
