@@ -2,15 +2,21 @@
 
 namespace TahirRasheed\MediaLibrary;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Database\Eloquent\Model;
 use TahirRasheed\MediaLibrary\Models\Media;
 
 class MediaHelper
 {
-    protected string $disk = config('filesystems.default');
+    protected string $disk;
     protected string $collection_name = '';
     protected $model;
+
+    public function __construct()
+    {
+        $this->disk = config('filesystems.default');
+    }
 
     public function disk(string $disk): MediaHelper
     {
@@ -61,7 +67,7 @@ class MediaHelper
             'mime_type' => $file->getMimeType(),
             'size' => $file->getSize(),
             'disk' => $this->disk,
-            'collection_name' => $this->collection_name,
+            'collection_name' => $this->getCollectionFromModel(),
         ]);
 
         return [
@@ -91,14 +97,14 @@ class MediaHelper
             return;
         }
 
-        $model->delete();
+        $model->deleteAllAttachments();
     }
 
     protected function getFileUploadPath(): string
     {
         $collection = $this->collection_name;
 
-        if (! $this->collection_name) {
+        if (empty($this->collection_name)) {
             $collection = $this->getCollectionFromModel();
         }
 
@@ -111,7 +117,7 @@ class MediaHelper
             return '';
         }
 
-        $collection = $this->model->collection();
+        $collection = $this->model->defaultCollection();
 
         return Str::kebab($collection);
     }

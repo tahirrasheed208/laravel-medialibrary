@@ -9,14 +9,13 @@ class Media extends Model
 {
     protected $guarded = [];
 
-    protected static function boot()
-    {
-        parent::boot();
-        self::observe(MediaObserver::class);
-    }
-
     public function attachment()
     {
         return $this->morphOne(MediaAttachment::class, 'imageable');
+    }
+
+    public function deleteAllAttachments()
+    {
+        //
     }
 }

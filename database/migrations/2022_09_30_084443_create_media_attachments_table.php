@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use TahirRasheed\MediaLibrary\Models\Media;
 
-class CreateMediaAttachmentTable extends Migration
+class CreateMediaAttachmentsTable extends Migration
 {
     /**
      * Run the migrations.

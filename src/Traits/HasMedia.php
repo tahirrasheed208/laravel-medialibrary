@@ -5,11 +5,14 @@ namespace TahirRasheed\MediaLibrary\Traits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Facades\Media;
 use TahirRasheed\MediaLibrary\Models\MediaAttachment;
 
 trait HasMedia
 {
+    protected string $collection = '';
+
     public static function bootHasMedia()
     {
         static::deleting(function (Model $model) {
@@ -27,16 +30,23 @@ trait HasMedia
         return $this->morphMany(MediaAttachment::class, 'imageable')->orderBy('sort_order');
     }
 
+    public function toMediaCollection(string $collection): Model
+    {
+        $this->collection = $collection;
+
+        return $this;
+    }
+
     public function handleMedia(array $request, string $type = 'image')
     {
-        return Media::disk($this->getDisk())->handle($request, $type, $this);
+        return Media::collection($this->collection)->handle($request, $type, $this);
     }
 
     public function hasMedia(string $type = 'image'): bool
     {
-        $getMedia = $this->getMedia($type);
+        $get_media = $this->getMedia($type);
 
-        if ($getMedia->isEmpty()) {
+        if ($get_media->isEmpty()) {
             return false;
         }
 
@@ -61,12 +71,26 @@ trait HasMedia
             ->values();
     }
 
+    public function getFirstMediaUrl(string $type = 'image', string $size = 'original'): string
+    {
+        $get_media = $this->getMedia($type);
+
+        if ($get_media->isEmpty()) {
+            return 'placeholder.png';
+        }
+
+        $media = $get_media->first()->media;
+        $file_path = $get_media->first()->getFilePath($size);
+
+        return Storage::disk($media->disk)->url('original/' . $media->file_name);
+    }
+
     public function sizes(): array
     {
         return [];
     }
 
-    public function collection(): string
+    public function defaultCollection(): string
     {
         return '';
     }

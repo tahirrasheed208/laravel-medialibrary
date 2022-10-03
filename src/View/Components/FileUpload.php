@@ -58,6 +58,7 @@ class FileUpload extends Component
             'btn-danger',
             'btn-sm',
             'htr-remove-file',
+            'remove_img',
             'd-none' => !$this->file
         ]);
     }
