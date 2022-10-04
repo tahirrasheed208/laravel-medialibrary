@@ -10,6 +10,6 @@ class MediaLibraryController extends Controller
 
     public function uploader()
     {
-        return $this->pretendResponseIsFile(__DIR__ . '/../../../resources/assets/js/uploader.js');
+        return $this->pretendResponseIsFile(__DIR__ . '/../../../dist/js/uploader.js');
     }
 }

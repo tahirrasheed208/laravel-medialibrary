@@ -1,7 +1,7 @@
 
 <div class="file-upload-box">
   <div class="{{ $previewClasses }}">
-    <img class="img-thumbnail img-preview" src="{{ $thumbnail }}">
+    <img class="img-thumbnail img-preview" src="{{ $thumbnail }}" width="150">
   </div>
   <span class="input-group-prepend">
     <button class="{{ $uploadButtonClasses }}" type="button"><i class="fa fa-upload mr-1"></i> {{ __('Upload') }}</button>
@@ -21,6 +21,6 @@
 
 @once
   @push('footer')
-    <script src="{{ route('medialibrary.uploader') }}?ver={{ time() }}"></script>
+    <script src="{{ route('medialibrary.uploader') }}"></script>
   @endpush
 @endonce
