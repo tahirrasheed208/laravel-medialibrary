@@ -14,16 +14,22 @@ class MediaConversion implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected int $media_id;
+    protected bool $without_conversions;
 
-    public function __construct(int $media_id)
+    public function __construct(int $media_id, bool $without_conversions)
     {
         $this->onQueue(config('medialibrary.queue_name'));
 
         $this->media_id = $media_id;
+        $this->without_conversions = $without_conversions;
     }
 
     public function handle()
     {
         (new MediaConversionHelper)->generateThumbnailConversion($this->media_id);
+
+        if (! $this->without_conversions) {
+            // generate conversions
+        }
     }
 }

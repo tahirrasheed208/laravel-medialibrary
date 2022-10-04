@@ -13,6 +13,7 @@ class MediaHelper
 {
     protected string $disk;
     protected string $collection_name = '';
+    protected bool $without_conversions;
     protected $model;
 
     public function __construct()
@@ -72,12 +73,19 @@ class MediaHelper
 
         $this->setDefaultConversions($media);
 
-        MediaConversion::dispatch($media->id);
+        MediaConversion::dispatch($media->id, $this->without_conversions);
 
         return [
             'media_id' => $media->id,
             'file_name' => $file->hashName(),
         ];
+    }
+
+    public function withoutConversions(bool $value): MediaHelper
+    {
+        $this->without_conversions = $value;
+
+        return $this;
     }
 
     protected function deleteOldFileIfRequested(array $request, string $type): void

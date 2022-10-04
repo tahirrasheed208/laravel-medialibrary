@@ -5,13 +5,14 @@ namespace TahirRasheed\MediaLibrary\Traits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use TahirRasheed\MediaLibrary\Facades\Media;
-use TahirRasheed\MediaLibrary\Models\Media as MediaModel;
+use TahirRasheed\MediaLibrary\MediaHelper;
+use TahirRasheed\MediaLibrary\Models\Media;
 
 trait HasMedia
 {
     protected string $collection = '';
     protected ?string $disk = null;
+    protected bool $without_conversions = false;
 
     public static function bootHasMedia()
     {
@@ -27,7 +28,7 @@ trait HasMedia
 
     public function attachments()
     {
-        return $this->morphMany(MediaModel::class, 'imageable')->orderBy('sort_order');
+        return $this->morphMany(Media::class, 'imageable')->orderBy('sort_order');
     }
 
     public function toMediaCollection(string $collection): Model
@@ -44,10 +45,18 @@ trait HasMedia
         return $this;
     }
 
+    public function withoutConversions(): Model
+    {
+        $this->without_conversions = true;
+
+        return $this;
+    }
+
     public function handleMedia(array $request, string $type = 'image')
     {
-        return Media::disk($this->disk)
+        return (new MediaHelper)->disk($this->disk)
             ->collection($this->collection)
+            ->withoutConversions($this->without_conversions)
             ->handle($request, $type, $this);
     }
 
@@ -62,7 +71,7 @@ trait HasMedia
         return true;
     }
 
-    public function getMedia(string $type = 'image'): ?MediaModel
+    public function getMedia(string $type = 'image'): ?Media
     {
         if (! $this->relationLoaded('attachments')) {
             $this->load('attachments');
