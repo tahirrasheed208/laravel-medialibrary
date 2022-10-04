@@ -13,16 +13,16 @@ class FileUpload extends Component
     public bool $file;
     public string $thumbnail;
 
-    public function __construct(string $name, string $inputId = null, bool $file = false, string $thumbnail = '', Model $row = null)
+    public function __construct(string $name, string $inputId = null, bool $file = false, string $thumbnail = '', Model $model = null)
     {
         $this->name = $name;
         $this->inputId = !is_null($inputId) ?: $name;
         $this->file = $file;
         $this->thumbnail = $thumbnail;
 
-        if ($row) {
-            $this->file = $row->hasMedia($name);
-            $this->thumbnail = $row->getThumbnailUrl($name);
+        if ($model) {
+            $this->file = $model->hasMedia($name);
+            $this->thumbnail = $model->getThumbnailUrl($name);
         }
     }
 
