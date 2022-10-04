@@ -4,10 +4,9 @@ namespace TahirRasheed\MediaLibrary\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Facades\Media;
-use TahirRasheed\MediaLibrary\Models\MediaAttachment;
+use TahirRasheed\MediaLibrary\Models\Media as MediaModel;
 
 trait HasMedia
 {
@@ -27,7 +26,7 @@ trait HasMedia
 
     public function attachments()
     {
-        return $this->morphMany(MediaAttachment::class, 'imageable')->orderBy('sort_order');
+        return $this->morphMany(MediaModel::class, 'imageable')->orderBy('sort_order');
     }
 
     public function toMediaCollection(string $collection): Model
@@ -44,45 +43,36 @@ trait HasMedia
 
     public function hasMedia(string $type = 'image'): bool
     {
-        $get_media = $this->getMedia($type);
+        $media = $this->getMedia($type);
 
-        if ($get_media->isEmpty()) {
+        if (! $media) {
             return false;
         }
 
         return true;
     }
 
-    public function getMedia(string $type = 'image'): Collection
+    public function getMedia(string $type = 'image'): ?MediaModel
     {
         if (! $this->relationLoaded('attachments')) {
             $this->load('attachments');
         }
 
-        if (! $this->attachments) {
-            return collect([]);
-        }
-
         return $this->attachments
-            ->filter(function ($item) use ($type) {
+            ->first(function ($item) use ($type) {
                 return $item['type'] === $type;
-            })
-            ->sortBy('sort_order')
-            ->values();
+            });
     }
 
     public function getFirstMediaUrl(string $type = 'image', string $size = 'original'): string
     {
-        $get_media = $this->getMedia($type);
+        $media = $this->getMedia($type);
 
-        if ($get_media->isEmpty()) {
+        if (! $media) {
             return 'placeholder.png';
         }
 
-        $media = $get_media->first()->media;
-        $file_path = $get_media->first()->getFilePath($size);
-
-        return Storage::disk($media->disk)->url('original/' . $media->file_name);
+        return Storage::disk($media->disk)->url($media->getFilePath($size));
     }
 
     public function sizes(): array

@@ -3,6 +3,8 @@
 namespace TahirRasheed\MediaLibrary;
 
 use Illuminate\Support\ServiceProvider;
+use TahirRasheed\MediaLibrary\Models\Media;
+use TahirRasheed\MediaLibrary\Observers\MediaObserver;
 use TahirRasheed\MediaLibrary\View\Components\FileUpload;
 
 class MediaLibraryServiceProvider extends ServiceProvider
@@ -41,5 +43,7 @@ class MediaLibraryServiceProvider extends ServiceProvider
         $this->loadViewComponentsAs('medialibrary', [
             FileUpload::class,
         ]);
+
+        Media::observe(MediaObserver::class);
     }
 }

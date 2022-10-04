@@ -5,7 +5,6 @@ namespace TahirRasheed\MediaLibrary;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
-use TahirRasheed\MediaLibrary\Models\Media;
 
 class MediaHelper
 {
@@ -42,32 +41,24 @@ class MediaHelper
             return false;
         }
 
-        $uploaded_file = $this->upload($request[$type]);
-
-        if (! $this->model) {
-            return true;
-        }
-
-        $this->model->attachments()->create([
-            'media_id' => $uploaded_file['media_id'],
-            'type' => $type,
-            'sort_order' => $model->attachments()->whereType($type)->count() + 1,
-        ]);
+        $this->upload($request[$type], $type);
 
         return true;
     }
 
-    public function upload(UploadedFile $file): array
+    public function upload(UploadedFile $file, string $type): array
     {
         $file->store($this->getFileUploadPath(), $this->disk);
 
-        $media = Media::create([
+        $media = $this->model->attachments()->create([
+            'type' => $type,
             'file_name' => $file->hashName(),
             'name' => $file->getClientOriginalName(),
             'mime_type' => $file->getMimeType(),
             'size' => $file->getSize(),
             'disk' => $this->disk,
-            'collection_name' => $this->getCollectionFromModel(),
+            'collection_name' => $this->getCollection(),
+            'sort_order' => $this->model->attachments()->whereType($type)->count(),
         ]);
 
         return [
@@ -86,29 +77,21 @@ class MediaHelper
             return;
         }
 
-        $attachment = $this->model->attachments()->whereType($type)->first();
-
-        $this->delete($attachment->media);
-    }
-
-    public function delete(?Model $model = null): void
-    {
-        if (! $model) {
-            return;
-        }
-
-        $model->deleteAllAttachments();
+        $this->model->attachments()->whereType($type)->first()->delete();
     }
 
     protected function getFileUploadPath(): string
     {
-        $collection = $this->collection_name;
+        return $this->getCollection() . DIRECTORY_SEPARATOR . 'original';
+    }
 
-        if (empty($this->collection_name)) {
-            $collection = $this->getCollectionFromModel();
+    protected function getCollection(): string
+    {
+        if ($this->collection_name) {
+            return $this->collection_name;
         }
 
-        return $collection . DIRECTORY_SEPARATOR . 'original';
+        return $this->getCollectionFromModel();
     }
 
     protected function getCollectionFromModel(): string

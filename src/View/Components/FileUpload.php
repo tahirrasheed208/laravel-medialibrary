@@ -22,7 +22,7 @@ class FileUpload extends Component
 
         if ($row) {
             $this->file = $row->hasMedia($name);
-            $this->thumbnail = $row->getFirstMediaUrl($name, 'thumbnail');
+            $this->thumbnail = $row->getFirstMediaUrl($name);
         }
     }
 
