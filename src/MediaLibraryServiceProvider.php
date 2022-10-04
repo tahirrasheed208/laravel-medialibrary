@@ -19,10 +19,6 @@ class MediaLibraryServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../config/medialibrary.php', 'medialibrary'
         );
-
-        $this->app->singleton('media', function () {
-            return new MediaHelper();
-        });
     }
 
     /**
