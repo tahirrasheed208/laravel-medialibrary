@@ -5,4 +5,6 @@
 /tests              export-ignore
 /docs               export-ignore
 /phpunit.xml        export-ignore
+/package.json       export-ignore
+/webpack.mix.js     export-ignore
 /resources/views/assets               export-ignore

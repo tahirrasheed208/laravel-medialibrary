@@ -22,20 +22,51 @@ php artisan vendor:publish --provider="TahirRasheed\MediaLibrary\MediaLibrarySer
 
 ### 3. Database
 
-Create table in database.
+Migrate your database.
 
 ```bash
 php artisan migrate
 ```
 
-### 4. Configure
+## Usage
 
-You can change the options of your app from `config/medialibrary.php` file
+Your Eloquent models should use the `TahirRasheed\MediaLibrary\Traits\HasMedia` trait.
 
-## Testing
+Use blade component to add file uploader in your form.
 
 ```bash
-./vendor/bin/phpunit
+<x-medialibrary-file-upload name="image" />
+```
+
+For display old image in edit page.
+
+```bash
+<x-medialibrary-file-upload name="image" :model="$model" />
+```
+
+## Upload
+
+```bash
+$model = Model::find(1);
+$model->handleMedia($request->toArray());
+```
+
+If your file input name is not `image` then define second param.
+
+```bash
+$model->handleMedia($request->toArray(), 'banner');
+```
+
+Upload to specific collection.
+
+```bash
+$model->toMediaCollection('images')->handleMedia($request->toArray());
+```
+
+Upload to specific disk.
+
+```bash
+$model->useDisk('s3')->handleMedia($request->toArray());
 ```
 
 ## Changelog
