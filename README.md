@@ -34,38 +34,47 @@ Your Eloquent models should use the `TahirRasheed\MediaLibrary\Traits\HasMedia` 
 
 Use blade component to add file uploader in your form.
 
-```bash
+```php
 <x-medialibrary-file-upload name="image" />
 ```
 
 For display old image in edit page.
 
-```bash
+```php
 <x-medialibrary-file-upload name="image" :model="$model" />
 ```
 
 ## Upload
 
-```bash
+```php
 $model = Model::find(1);
 $model->handleMedia($request->toArray());
 ```
 
 If your file input name is not `image` then define second param.
 
-```bash
+```php
 $model->handleMedia($request->toArray(), 'banner');
 ```
 
 Upload to specific collection.
 
-```bash
+```php
 $model->toMediaCollection('images')->handleMedia($request->toArray());
+```
+
+You can define default collection at eloquent level. Add below function in your model.
+
+```php
+public function defaultCollection(): string
+{
+    return 'post_images';
+}
 ```
 
 Upload to specific disk.
 
-```bash
+```php
 $model->useDisk('s3')->handleMedia($request->toArray());
 ```
 
