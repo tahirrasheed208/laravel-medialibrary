@@ -5,6 +5,7 @@ namespace TahirRasheed\MediaLibrary;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
+use TahirRasheed\MediaLibrary\Exceptions\FileSizeTooBigException;
 use TahirRasheed\MediaLibrary\Jobs\MediaConversion;
 use TahirRasheed\MediaLibrary\Models\Media;
 
@@ -54,6 +55,8 @@ class MediaHelper
 
     public function upload(UploadedFile $file, string $type): array
     {
+        $this->checkMaxFileUploadSize($file);
+
         $file->store($this->getFileUploadPath(), $this->disk);
 
         $media = $this->model->attachments()->create([
@@ -85,6 +88,10 @@ class MediaHelper
 
         if ($request['remove_' . $type] === 'no') {
             return;
+        }
+
+        if (isset($request[$type])) {
+            $this->checkMaxFileUploadSize($request[$type]);
         }
 
         $this->model->attachments()->whereType($type)->first()->delete();
@@ -129,5 +136,12 @@ class MediaHelper
 
         $media->conversions = $conversions;
         $media->save();
+    }
+
+    protected function checkMaxFileUploadSize(UploadedFile $file)
+    {
+        if ($file->getSize() > config('medialibrary.max_file_size')) {
+            throw new FileSizeTooBigException();
+        }
     }
 }
