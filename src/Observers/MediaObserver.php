@@ -16,7 +16,7 @@ class MediaObserver
         }
 
         foreach ($media->conversions as $conversion) {
-            Storage::disk($media->disk)->delete($media->getSizePath($conversion));
+            Storage::disk($media->disk)->delete($conversion);
         }
     }
 }

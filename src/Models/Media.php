@@ -34,7 +34,7 @@ class Media extends Model
             throw new SizeNotAvailableException();
         }
 
-        return $this->getSizePath($size);
+        return $conversions[$size];
     }
 
     public function getSizePath(string $size): string

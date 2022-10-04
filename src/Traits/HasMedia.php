@@ -11,6 +11,7 @@ use TahirRasheed\MediaLibrary\Models\Media as MediaModel;
 trait HasMedia
 {
     protected string $collection = '';
+    protected ?string $disk = null;
 
     public static function bootHasMedia()
     {
@@ -36,9 +37,18 @@ trait HasMedia
         return $this;
     }
 
+    public function useDisk(string $disk): Model
+    {
+        $this->disk = $disk;
+
+        return $this;
+    }
+
     public function handleMedia(array $request, string $type = 'image')
     {
-        return Media::collection($this->collection)->handle($request, $type, $this);
+        return Media::disk($this->disk)
+            ->collection($this->collection)
+            ->handle($request, $type, $this);
     }
 
     public function hasMedia(string $type = 'image'): bool
@@ -69,10 +79,25 @@ trait HasMedia
         $media = $this->getMedia($type);
 
         if (! $media) {
-            return 'placeholder.png';
+            return '';
         }
 
         return Storage::disk($media->disk)->url($media->getFilePath($size));
+    }
+
+    public function getThumbnailUrl(string $type = 'image'): string
+    {
+        $media = $this->getMedia($type);
+
+        if (! $media) {
+            return '';
+        }
+
+        try {
+            return $media->getFilePath('thumbnail');
+        } catch (\Throwable $th) {
+            return $media->getFilePath();
+        }
     }
 
     public function sizes(): array

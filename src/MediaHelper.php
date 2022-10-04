@@ -5,6 +5,8 @@ namespace TahirRasheed\MediaLibrary;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
+use TahirRasheed\MediaLibrary\Jobs\MediaConversion;
+use TahirRasheed\MediaLibrary\Models\Media;
 
 class MediaHelper
 {
@@ -14,11 +16,15 @@ class MediaHelper
 
     public function __construct()
     {
-        $this->disk = config('filesystems.default');
+        $this->disk = config('medialibrary.disk_name');
     }
 
-    public function disk(string $disk): MediaHelper
+    public function disk(string $disk = null): MediaHelper
     {
+        if (! $disk) {
+            return $this;
+        }
+
         $this->disk = $disk;
 
         return $this;
@@ -60,6 +66,10 @@ class MediaHelper
             'collection_name' => $this->getCollection(),
             'sort_order' => $this->model->attachments()->whereType($type)->count(),
         ]);
+
+        $this->setDefaultConversions($media);
+
+        MediaConversion::dispatch($media->id);
 
         return [
             'media_id' => $media->id,
@@ -103,5 +113,21 @@ class MediaHelper
         $collection = $this->model->defaultCollection();
 
         return Str::kebab($collection);
+    }
+
+    protected function setDefaultConversions(Media $media)
+    {
+        $file_path = $media->getFilePath();
+
+        $conversions = [
+            'thumbnail' => $file_path,
+        ];
+
+        foreach ($media->imageable->sizes() as $size) {
+            $conversions[$size] = $file_path;
+        }
+
+        $media->conversions = $conversions;
+        $media->save();
     }
 }
