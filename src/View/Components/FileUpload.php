@@ -34,7 +34,7 @@ class FileUpload extends Component
     public function previewClasses(): string
     {
         return Arr::toCssClasses([
-            'main-img-preview',
+            'lm-img-preview',
             'mb-2',
             'd-none' => !$this->file
         ]);
@@ -46,7 +46,7 @@ class FileUpload extends Component
             'btn',
             'btn-primary',
             'btn-sm',
-            'ps-trigger-file',
+            'lm-upload-button',
             'd-none' => $this->file
         ]);
     }
@@ -57,8 +57,7 @@ class FileUpload extends Component
             'btn',
             'btn-danger',
             'btn-sm',
-            'htr-remove-file',
-            'remove_img',
+            'lm-remove-button',
             'd-none' => !$this->file
         ]);
     }

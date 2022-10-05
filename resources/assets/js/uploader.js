@@ -1,37 +1,44 @@
 "use strict";
 
-$(document).on('change', '.ps-file-input', function () {
-  readURL(this);
-  $(this).prev('.ps-trigger-file').addClass('d-none');
-  // $(this).closest("span.input-group-prepend").find(".remove_file_field").val('no');
-  $(this).next('.htr-remove-file').removeClass('d-none');
-});
+function uploadFile(element) {
+    element.parentElement.querySelector('input[type=file]').click();
+}
 
-$(document).on('click', '.ps-trigger-file', function () {
-  $(this).next('input').trigger('click');
-});
+function changeFile(element) {
+    element.closest('.lm-file-upload-box').querySelector('input[type=file]').click();
+}
 
-$(document).on('click', '.img-preview', function () {
-  $(this).parent().next('div').find('input').trigger('click');
-});
+function chooseFile(element) {
+    readFile(element);
+    element.parentElement.querySelector('.lm-upload-button').classList.add('d-none');
+    element.parentElement.querySelector('.lm-remove-button').classList.remove('d-none');
+}
 
-$(document).on('click', '.htr-remove-file', function () {
-  $(this).parent().find('input:file').val('');
-  $(this).closest('.file-upload-box').find('div.main-img-preview').addClass('d-none');
-  $(this).addClass('d-none');
-  $(this).next('a').hide();
-  $(this).prev().prev().removeClass('d-none');
-  $(this).closest("span.input-group-prepend").find(".remove_file_field").val('yes');
-});
+function removeFile(element) {
+    element.parentElement.querySelector('input[type=file]').value = '';
+    element.parentElement.querySelector('.lm-img-preview').classList.add('d-none');
+    element.classList.add('d-none');
+    element.parentElement.querySelector('.lm-upload-button').classList.remove('d-none');
 
-function readURL(input) {
-  if (input.files && input.files[0]) {
-    var reader = new FileReader();
+    let remove_field = element.parentElement.querySelector('input[type=hidden]');
+
+    if (remove_field) {
+        remove_field.value = 'yes';
+    }
+}
+
+function readFile(input) {
+    if (!input.files || input.files.length == 0) {
+        return;
+    }
+
+    const reader = new FileReader();
 
     reader.onload = function (e) {
-      $(input).parent().next('input').val(input.value.substring(12));
-      $(input).closest('.file-upload-box').find('div.main-img-preview').removeClass('d-none').find('.img-preview').attr('src', e.target.result);
+        let target = input.parentElement.querySelector('.lm-img-preview');
+        target.classList.remove('d-none');
+        target.querySelector('img').src = e.target.result;
     };
+
     reader.readAsDataURL(input.files[0]);
-  }
 }
