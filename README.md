@@ -78,6 +78,49 @@ Upload to specific disk.
 $model->useDisk('s3')->handleMedia($request->toArray());
 ```
 
+### Register Media Conversions
+
+```php
+public function registerMediaConversions()
+{
+    $this->addMediaConversion('post_main')
+        ->width(420)
+        ->height(350);
+}
+```
+
+You can register as many media conversions as you want
+
+```php
+public function registerMediaConversions()
+{
+    $this->addMediaConversion('post_main')
+        ->width(420)
+        ->height(350);
+
+    $this->addMediaConversion('post_detail')
+        ->width(700)
+        ->height(550);
+}
+```
+
+Default force crop is disabled, but you can enable it
+
+```php
+$this->addMediaConversion('post_main')
+    ->width(420)
+    ->height(350)
+    ->crop();
+```
+
+### Disable Conversions
+
+If you want to disable registered conversions on some files
+
+```php
+$model->withoutConversions()->handleMedia($request->toArray());
+```
+
 ## Changelog
 
 Please see [Releases](../../releases) for more information what has changed recently.

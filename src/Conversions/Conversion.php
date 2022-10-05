@@ -39,9 +39,9 @@ class Conversion
         return $this;
     }
 
-    public function crop(bool $crop): Conversion
+    public function crop(): Conversion
     {
-        $this->crop = $crop;
+        $this->crop = true;
 
         return $this;
     }
