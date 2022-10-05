@@ -85,7 +85,7 @@ trait HasMedia
             });
     }
 
-    public function getFirstMediaUrl(string $type = 'image', string $size = 'original'): string
+    public function getFirstMediaUrl(string $type = 'image', string $conversion = 'original'): string
     {
         $media = $this->getMedia($type);
 
@@ -93,7 +93,7 @@ trait HasMedia
             return '';
         }
 
-        return Storage::disk($media->disk)->url($media->getFilePath($size));
+        return Storage::disk($media->disk)->url($media->getFilePath($conversion));
     }
 
     public function getThumbnailUrl(string $type = 'image'): string

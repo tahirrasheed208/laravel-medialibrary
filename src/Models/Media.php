@@ -3,7 +3,7 @@
 namespace TahirRasheed\MediaLibrary\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use TahirRasheed\MediaLibrary\Exceptions\SizeNotAvailableException;
+use TahirRasheed\MediaLibrary\Exceptions\ConversionNotAvailableException;
 
 class Media extends Model
 {
@@ -27,11 +27,11 @@ class Media extends Model
         }
 
         if (empty($conversions)) {
-            throw new SizeNotAvailableException();
+            throw new ConversionNotAvailableException();
         }
 
         if (! isset($conversions[$key])) {
-            throw new SizeNotAvailableException();
+            throw new ConversionNotAvailableException();
         }
 
         return $conversions[$key];
