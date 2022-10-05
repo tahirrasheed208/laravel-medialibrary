@@ -18,31 +18,31 @@ class Media extends Model
         return $this->morphTo();
     }
 
-    public function getFilePath(string $size = 'original'): string
+    public function getFilePath(string $key = 'original'): string
     {
         $conversions = $this->conversions;
 
-        if ($size === 'original') {
-            return $this->getSizePath($size);
+        if ($key === 'original') {
+            return $this->getConversionPath($key);
         }
 
         if (empty($conversions)) {
             throw new SizeNotAvailableException();
         }
 
-        if (! isset($conversions[$size])) {
+        if (! isset($conversions[$key])) {
             throw new SizeNotAvailableException();
         }
 
-        return $conversions[$size];
+        return $conversions[$key];
     }
 
-    public function getSizePath(string $size): string
+    public function getConversionPath(string $key): string
     {
         if (empty($this->collection_name)) {
-            return $size . DIRECTORY_SEPARATOR . $this->file_name;
+            return $key . DIRECTORY_SEPARATOR . $this->file_name;
         }
 
-        return $this->collection_name . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $this->file_name;
+        return $this->collection_name . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . $this->file_name;
     }
 }

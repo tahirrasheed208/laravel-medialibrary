@@ -29,7 +29,7 @@ class ConversionHelper
         $image = $this->resizeMedia($original_image, $conversion);
 
         Storage::disk($this->media->disk)
-            ->put($this->media->getSizePath($conversion->name), $image->stream(), 'public');
+            ->put($this->media->getConversionPath($conversion->name), $image->stream(), 'public');
 
         $this->updateConversionsAttribute($this->media, $conversion->name);
     }
@@ -84,7 +84,7 @@ class ConversionHelper
             ->fit($width, $height);
 
         Storage::disk($this->media->disk)
-            ->put($this->media->getSizePath('thumbnail'), $image->stream(), 'public');
+            ->put($this->media->getConversionPath('thumbnail'), $image->stream(), 'public');
 
         $this->updateConversionsAttribute('thumbnail');
     }
@@ -92,7 +92,7 @@ class ConversionHelper
     protected function updateConversionsAttribute(string $key = 'original'): void
     {
         $conversions = $this->media->conversions;
-        $conversions[$key] = $this->media->getSizePath($key);
+        $conversions[$key] = $this->media->getConversionPath($key);
 
         $this->media->conversions = $conversions;
         $this->media->save();

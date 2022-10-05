@@ -9,7 +9,7 @@ class MediaObserver
 {
     public function deleted(Media $media)
     {
-        Storage::disk($media->disk)->delete($media->getSizePath('original'));
+        Storage::disk($media->disk)->delete($media->getConversionPath('original'));
 
         if (empty($media->conversions)) {
             return;
