@@ -31,7 +31,7 @@ class ConversionHelper
         Storage::disk($this->media->disk)
             ->put($this->media->getConversionPath($conversion->name), $image->stream(), 'public');
 
-        $this->updateConversionsAttribute($this->media, $conversion->name);
+        $this->updateConversionsAttribute($conversion->name);
     }
 
     protected function resizeMedia(string $original_image, Conversion $conversion)
