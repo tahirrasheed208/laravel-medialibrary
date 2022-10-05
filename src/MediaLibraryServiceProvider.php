@@ -2,6 +2,7 @@
 
 namespace TahirRasheed\MediaLibrary;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use TahirRasheed\MediaLibrary\Models\Media;
 use TahirRasheed\MediaLibrary\Observers\MediaObserver;
@@ -41,5 +42,9 @@ class MediaLibraryServiceProvider extends ServiceProvider
         ]);
 
         Media::observe(MediaObserver::class);
+
+        Blade::directive('mediaLibraryScript', function () {
+            return "<script src='".route('medialibrary.uploader')."?ver=1.1.0'></script>";
+        });
     }
 }

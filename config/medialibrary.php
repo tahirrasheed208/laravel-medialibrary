@@ -32,4 +32,10 @@ return [
         'width' => 200,
         'height' => 200,
     ],
+
+    /*
+     * Define your blade stack name
+     * where we push our uploader scripts.
+     */
+    'stack' => 'footer',
 ];

@@ -121,6 +121,20 @@ If you want to disable registered conversions on some files
 $model->withoutConversions()->handleMedia($request->toArray());
 ```
 
+## Confugration
+
+Define your layout stack in config file.
+
+```bash
+'stack' => 'footer',
+```
+
+Or you can use our blade directive.
+
+```bash
+@mediaLibraryScript
+```
+
 ## Changelog
 
 Please see [Releases](../../releases) for more information what has changed recently.

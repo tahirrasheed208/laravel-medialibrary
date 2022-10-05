@@ -17,7 +17,7 @@
 @enderror
 
 @once
-  @push('footer')
-    <script src="{{ route('medialibrary.uploader') }}?ver=1.1.0"></script>
+  @push(config('medialibrary.stack'))
+    @mediaLibraryScript
   @endpush
 @endonce
