@@ -5,6 +5,7 @@ namespace TahirRasheed\MediaLibrary\Traits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use TahirRasheed\MediaLibrary\Conversions\Conversion;
 use TahirRasheed\MediaLibrary\MediaHelper;
 use TahirRasheed\MediaLibrary\Models\Media;
 
@@ -13,6 +14,7 @@ trait HasMedia
     protected string $collection = '';
     protected ?string $disk = null;
     protected bool $without_conversions = false;
+    public array $mediaConversions = [];
 
     public static function bootHasMedia()
     {
@@ -109,9 +111,17 @@ trait HasMedia
         }
     }
 
-    public function sizes(): array
+    public function addMediaConversion(string $name): Conversion
     {
-        return [];
+        $conversion = (new Conversion)->create($name);
+
+        $this->mediaConversions[] = $conversion;
+
+        return $conversion;
+    }
+
+    public function registerMediaConversions()
+    {
     }
 
     public function defaultCollection(): string

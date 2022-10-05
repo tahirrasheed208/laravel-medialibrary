@@ -6,7 +6,9 @@ use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
 use TahirRasheed\MediaLibrary\Exceptions\FileSizeTooBigException;
+use TahirRasheed\MediaLibrary\Exceptions\InvalidConversionException;
 use TahirRasheed\MediaLibrary\Jobs\MediaConversion;
+use TahirRasheed\MediaLibrary\Jobs\ThumbnailConversion;
 use TahirRasheed\MediaLibrary\Models\Media;
 
 class MediaHelper
@@ -43,6 +45,8 @@ class MediaHelper
     {
         $this->model = $model;
 
+        $this->validateModelRegisteredConversions();
+
         $this->deleteOldFileIfRequested($request, $type);
 
         if (! isset($request[$type])) {
@@ -73,7 +77,7 @@ class MediaHelper
 
         $this->setDefaultConversions($media);
 
-        MediaConversion::dispatch($media->id, $this->without_conversions);
+        $this->dispatchConversionJobs($media->id);
 
         return [
             'media_id' => $media->id,
@@ -132,17 +136,12 @@ class MediaHelper
 
     protected function setDefaultConversions(Media $media)
     {
-        $file_path = $media->getFilePath();
-
         $conversions = [
-            'thumbnail' => $file_path,
+            'thumbnail' => $media->getFilePath(),
         ];
 
-        foreach ($media->imageable->sizes() as $size) {
-            $conversions[$size] = $file_path;
-        }
-
         $media->conversions = $conversions;
+
         $media->save();
     }
 
@@ -150,6 +149,44 @@ class MediaHelper
     {
         if ($file->getSize() > config('medialibrary.max_file_size')) {
             throw new FileSizeTooBigException();
+        }
+    }
+
+    protected function dispatchConversionJobs(int $media_id)
+    {
+        ThumbnailConversion::dispatch($media_id);
+
+        if ($this->without_conversions) {
+            return;
+        }
+
+        if (empty($this->model->mediaConversions)) {
+            return;
+        }
+
+        MediaConversion::dispatch($media_id, $this->model->mediaConversions);
+    }
+
+    protected function validateModelRegisteredConversions(): void
+    {
+        if ($this->without_conversions) {
+            return;
+        }
+
+        $this->model->registerMediaConversions();
+
+        if (empty($this->model->mediaConversions)) {
+            return;
+        }
+
+        foreach ($this->model->mediaConversions as $conversion) {
+            if (! property_exists($conversion, 'width')) {
+                throw InvalidConversionException::width();
+            }
+
+            if (! property_exists($conversion, 'height')) {
+                throw InvalidConversionException::height();
+            }
         }
     }
 }
