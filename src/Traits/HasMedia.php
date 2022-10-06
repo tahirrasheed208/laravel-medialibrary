@@ -105,9 +105,9 @@ trait HasMedia
         }
 
         try {
-            return $media->getFilePath('thumbnail');
+            return Storage::disk($media->disk)->url($media->getFilePath('thumbnail'));
         } catch (\Throwable $th) {
-            return $media->getFilePath();
+            return $this->getFirstMediaUrl();
         }
     }
 

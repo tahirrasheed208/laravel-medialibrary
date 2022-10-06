@@ -25,8 +25,12 @@ trait MediaHelper
         return $this;
     }
 
-    public function collection(string $collection_name)
+    public function collection(string $collection_name = null)
     {
+        if (! $collection_name) {
+            return $this;
+        }
+
         $this->collection_name = $collection_name;
 
         return $this;
