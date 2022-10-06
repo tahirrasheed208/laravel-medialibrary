@@ -38,4 +38,12 @@ return [
      * where we push our uploader scripts.
      */
     'stack' => 'footer',
+
+    /*
+     * Define collection & disk for laravel-settings package.
+     */
+    'laravel_settings' => [
+        'collection' => 'settings',
+        'disk' => env('MEDIA_DISK', 'public'),
+    ],
 ];
