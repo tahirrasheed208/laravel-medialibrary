@@ -121,7 +121,7 @@ If you want to disable registered conversions on some files
 $model->withoutConversions()->handleMedia($request->toArray());
 ```
 
-## Confugration
+## Configuration
 
 Define your layout stack in config file.
 
@@ -133,6 +133,38 @@ Or you can use our blade directive.
 
 ```bash
 @mediaLibraryScript
+```
+
+## Implements with Laravel Settings
+
+Install settings package
+
+```bash
+composer require tahirrasheed208/laravel-settings
+```
+
+Blade component to display old file
+
+```php
+<x-medialibrary-file-upload name="image" setting="{{ setting()->getFile('name') }}" />
+```
+
+To upload file
+
+```php
+setting()->upload($request->toArray(), 'file_name');
+```
+
+By default we expect file name is your option name, but you can define your option name as well
+
+```php
+setting()->upload($request->toArray(), 'file_name', 'option_name');
+```
+
+### Get Uploaded File
+
+```php
+setting()->getFile('name');
 ```
 
 ## Changelog
