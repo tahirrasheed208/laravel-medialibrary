@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Conversions\Conversion;
-use TahirRasheed\MediaLibrary\MediaHelper;
+use TahirRasheed\MediaLibrary\MediaUpload;
 use TahirRasheed\MediaLibrary\Models\Media;
 
 trait HasMedia
@@ -56,7 +56,7 @@ trait HasMedia
 
     public function handleMedia(array $request, string $type = 'image')
     {
-        return (new MediaHelper)->disk($this->disk)
+        return (new MediaUpload)->disk($this->disk)
             ->collection($this->collection)
             ->withoutConversions($this->without_conversions)
             ->handle($request, $type, $this);

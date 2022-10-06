@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use TahirRasheed\MediaLibrary\Exceptions\FileSizeTooBigException;
 use TahirRasheed\MediaLibrary\Models\Media;
 
-trait BasicMediaHelper
+trait MediaHelper
 {
     public string $disk;
     public string $collection_name = '';

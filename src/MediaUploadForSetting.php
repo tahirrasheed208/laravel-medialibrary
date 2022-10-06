@@ -5,11 +5,11 @@ namespace TahirRasheed\MediaLibrary;
 use Illuminate\Http\UploadedFile;
 use TahirRasheed\MediaLibrary\Jobs\ThumbnailConversion;
 use TahirRasheed\MediaLibrary\Models\Media;
-use TahirRasheed\MediaLibrary\Traits\BasicMediaHelper;
+use TahirRasheed\MediaLibrary\Traits\MediaHelper;
 
 class MediaUploadForSetting
 {
-    use BasicMediaHelper;
+    use MediaHelper;
 
     public function __construct()
     {

@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use TahirRasheed\MediaLibrary\Exceptions\InvalidConversionException;
 use TahirRasheed\MediaLibrary\Jobs\MediaConversion;
 use TahirRasheed\MediaLibrary\Jobs\ThumbnailConversion;
-use TahirRasheed\MediaLibrary\Traits\BasicMediaHelper;
+use TahirRasheed\MediaLibrary\Traits\MediaHelper;
 
-class MediaHelper
+class MediaUpload
 {
-    use BasicMediaHelper;
+    use MediaHelper;
 
     public function __construct()
     {
