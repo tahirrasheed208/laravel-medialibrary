@@ -4,6 +4,7 @@ namespace TahirRasheed\MediaLibrary;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Exceptions\InvalidConversionException;
 use TahirRasheed\MediaLibrary\Jobs\MediaConversion;
 use TahirRasheed\MediaLibrary\Jobs\ThumbnailConversion;
@@ -60,6 +61,45 @@ class MediaUpload
             'media_id' => $media->id,
             'file_name' => $file->hashName(),
         ];
+    }
+
+    public function attachGallery(array $request, string $type, Model $model): bool
+    {
+        $this->model = $model;
+
+        $this->validateModelRegisteredConversions();
+
+        if (! isset($request[$type])) {
+            return false;
+        }
+
+        $this->moveFiles($request[$type], $type);
+
+        return true;
+    }
+
+    protected function moveFiles(array $files, string $type)
+    {
+        foreach ($files as $file) {
+            $temp_path = 'dropzone' . DIRECTORY_SEPARATOR . 'temp' . DIRECTORY_SEPARATOR . $file;
+            $new_path = $this->getFileUploadPath() . DIRECTORY_SEPARATOR . $file;
+
+            Storage::disk($this->disk)->move($temp_path, $new_path);
+
+            $media = $this->model->attachments()->create([
+                'type' => $type,
+                'file_name' => $file,
+                'mime_type' => Storage::mimeType($new_path),
+                'size' => Storage::size($new_path),
+                'disk' => $this->disk,
+                'collection_name' => $this->getCollection(),
+                'sort_order' => $this->model->attachments()->whereType($type)->count(),
+            ]);
+
+            $this->setDefaultConversions($media);
+
+            $this->dispatchConversionJobs($media->id);
+        }
     }
 
     protected function deleteOldFileIfRequested(array $request, string $type): void
