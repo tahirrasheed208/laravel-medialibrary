@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use TahirRasheed\MediaLibrary\Models\Media;
 use TahirRasheed\MediaLibrary\Observers\MediaObserver;
+use TahirRasheed\MediaLibrary\View\Components\Dropzone;
 use TahirRasheed\MediaLibrary\View\Components\FileUpload;
 
 class MediaLibraryServiceProvider extends ServiceProvider
@@ -39,6 +40,7 @@ class MediaLibraryServiceProvider extends ServiceProvider
 
         $this->loadViewComponentsAs('medialibrary', [
             FileUpload::class,
+            Dropzone::class,
         ]);
 
         Media::observe(MediaObserver::class);
