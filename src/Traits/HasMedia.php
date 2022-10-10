@@ -69,6 +69,14 @@ trait HasMedia
             ->attachGallery($request, $type, $this);
     }
 
+    public function addMediaFromUrl(string $url, string $type = 'image')
+    {
+        return (new MediaUpload)->disk($this->disk)
+            ->collection($this->collection)
+            ->withoutConversions($this->without_conversions)
+            ->addMediaFromUrl($url, $type, $this);
+    }
+
     public function hasMedia(string $type = 'image'): bool
     {
         $media = $this->getMedia($type);

@@ -9,10 +9,11 @@ use TahirRasheed\MediaLibrary\Exceptions\InvalidConversionException;
 use TahirRasheed\MediaLibrary\Jobs\MediaConversion;
 use TahirRasheed\MediaLibrary\Jobs\ThumbnailConversion;
 use TahirRasheed\MediaLibrary\Traits\MediaHelper;
+use TahirRasheed\MediaLibrary\Traits\UploadFromUrl;
 
 class MediaUpload
 {
-    use MediaHelper;
+    use MediaHelper, UploadFromUrl;
 
     public function __construct()
     {
@@ -103,8 +104,8 @@ class MediaUpload
             $media = $this->model->attachments()->create([
                 'type' => $type,
                 'file_name' => $file,
-                'mime_type' => Storage::mimeType($new_path),
-                'size' => Storage::size($new_path),
+                'mime_type' => Storage::disk($this->disk)->mimeType($new_path),
+                'size' => Storage::disk($this->disk)->size($new_path),
                 'disk' => $this->disk,
                 'collection_name' => $this->getCollection(),
                 'sort_order' => $this->model->attachments()->whereType($type)->count(),
