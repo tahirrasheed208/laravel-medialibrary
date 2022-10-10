@@ -73,12 +73,19 @@ class MediaUpload
             return false;
         }
 
-        $this->moveFiles($request[$type], $type);
+        $files = $request[$type];
+        $files = explode(',', $files);
+
+        if (empty($files)) {
+            return false;
+        }
+
+        $this->moveTempFilesToMedia($files, $type);
 
         return true;
     }
 
-    protected function moveFiles(array $files, string $type)
+    protected function moveTempFilesToMedia(array $files, string $type)
     {
         foreach ($files as $file) {
             $temp_path = 'dropzone' . DIRECTORY_SEPARATOR . 'temp' . DIRECTORY_SEPARATOR . $file;
