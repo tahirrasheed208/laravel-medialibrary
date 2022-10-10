@@ -62,6 +62,13 @@ trait HasMedia
             ->handle($request, $type, $this);
     }
 
+    public function attachGallery(array $request, string $type = 'gallery')
+    {
+        return (new MediaUpload)->collection($this->collection)
+            ->withoutConversions($this->without_conversions)
+            ->attachGallery($request, $type, $this);
+    }
+
     public function hasMedia(string $type = 'image'): bool
     {
         $media = $this->getMedia($type);
@@ -81,6 +88,18 @@ trait HasMedia
 
         return $this->attachments
             ->first(function ($item) use ($type) {
+                return $item['type'] === $type;
+            });
+    }
+
+    public function getAttachments(string $type = 'gallery')
+    {
+        if (! $this->relationLoaded('attachments')) {
+            $this->load('attachments');
+        }
+
+        return $this->attachments
+            ->filter(function ($item) use ($type) {
                 return $item['type'] === $type;
             });
     }

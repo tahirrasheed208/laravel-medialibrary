@@ -11,6 +11,8 @@ class MediaObserver
     {
         Storage::disk($media->disk)->delete($media->getConversionPath('original'));
 
+        $this->decrementSortOrder($media);
+
         if (empty($media->conversions)) {
             return;
         }
@@ -18,5 +20,19 @@ class MediaObserver
         foreach ($media->conversions as $conversion) {
             Storage::disk($media->disk)->delete($conversion);
         }
+    }
+
+    protected function decrementSortOrder(Media $media)
+    {
+        $imageable = $media->imageable;
+
+        if (! $imageable) {
+            return;
+        }
+
+        $imageable->attachments()
+            ->whereType($media->type)
+            ->where('sort_order', '>', $media->sort_order)
+            ->decrement('sort_order');
     }
 }
