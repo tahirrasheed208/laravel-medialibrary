@@ -3,7 +3,7 @@
 namespace TahirRasheed\MediaLibrary\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use TahirRasheed\MediaLibrary\Services\DropzoneService;
 use TahirRasheed\MediaLibrary\Traits\CanPretendToBeAFile;
 
 class MediaLibraryController extends Controller
@@ -21,20 +21,7 @@ class MediaLibraryController extends Controller
             'file' => ['required', 'array', 'min:1'],
         ]);
 
-        $disk = config('medialibrary.disk_name');
-
-        $response = [];
-
-        foreach ($request->file as $file) {
-            $file->store('dropzone/temp', $disk);
-
-            $response[] = [
-                'file_name' => $file->getClientOriginalName(),
-                'new_name' => $file->hashName(),
-            ];
-        }
-
-        return $response;
+        return (new DropzoneService)->upload($request->toArray());
     }
 
     public function delete(Request $request)
@@ -43,9 +30,7 @@ class MediaLibraryController extends Controller
             'file_name' => ['required', 'string'],
         ]);
 
-        $disk = config('medialibrary.disk_name');
-
-        Storage::disk($disk)->delete('dropzone/temp/' . $request->file_name);
+        (new DropzoneService)->delete($request->toArray());
 
         return response()->json('success');
     }
