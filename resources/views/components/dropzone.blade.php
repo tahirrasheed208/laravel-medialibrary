@@ -39,6 +39,7 @@
 
     myDropzone.on("sending", function(file, xhr, formData) {
       formData.append("type", "{{ $name }}");
+      formData.append("collection", "{{ $collection }}");
 
       @if ($model)
         formData.append("model", "{{ class_basename($model) }}");

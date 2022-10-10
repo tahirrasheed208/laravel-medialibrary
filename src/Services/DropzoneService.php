@@ -39,6 +39,7 @@ class DropzoneService
 
         foreach ($this->request['file'] as $file) {
             $media = (new MediaUpload)->setModel($model)
+                ->collection($this->request['collection'])
                 ->upload($file, $this->request['type']);
 
             $response[] = [
