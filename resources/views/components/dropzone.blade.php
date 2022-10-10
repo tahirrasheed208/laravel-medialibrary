@@ -8,6 +8,13 @@
 @once
   @push(config('medialibrary.stack'))
     <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+    <style>
+      .dropzone { border: 2px dashed #0087F7; border-radius: 5px; background: white; }
+      .dropzone .dz-message { font-weight: 400; }
+      .dropzone .dz-message .note { font-size: 0.8em; font-weight: 200; display: block; margin-top: 1.4rem; }
+      .dropzone .dz-preview .dz-image img { max-width: 100%;}
+      .dz-size { display: none !important;}
+    </style>
     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
   @endpush
 @endonce
@@ -21,9 +28,9 @@
       url: "{{ route('medialibrary.dropzone.upload') }}",
       addRemoveLinks: true,
       uploadMultiple: true,
-      parallelUploads: 20,
-      maxFiles: 20,
-      maxFilesize: 3, // MB
+      parallelUploads: {{ $max_files }},
+      maxFiles: {{ $max_files }},
+      maxFilesize: {{ $max_file_size }}, // MB
       acceptedFiles: ".jpeg,.jpg,.png",
       headers: {
         'X-CSRF-TOKEN': "{{ csrf_token() }}"
