@@ -92,6 +92,18 @@ trait HasMedia
             });
     }
 
+    public function getAttachments(string $type = 'gallery')
+    {
+        if (! $this->relationLoaded('attachments')) {
+            $this->load('attachments');
+        }
+
+        return $this->attachments
+            ->filter(function ($item) use ($type) {
+                return $item['type'] === $type;
+            });
+    }
+
     public function getFirstMediaUrl(string $type = 'image', string $conversion = 'original'): string
     {
         $media = $this->getMedia($type);

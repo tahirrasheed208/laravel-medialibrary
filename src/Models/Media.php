@@ -3,6 +3,7 @@
 namespace TahirRasheed\MediaLibrary\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Exceptions\ConversionNotAvailableException;
 
 class Media extends Model
@@ -16,6 +17,11 @@ class Media extends Model
     public function imageable()
     {
         return $this->morphTo();
+    }
+
+    public function getUrl(string $conversion = 'original')
+    {
+        return Storage::disk($this->disk)->url($this->getFilePath($conversion));
     }
 
     public function getFilePath(string $key = 'original'): string
