@@ -11,7 +11,7 @@ trait MediaHelper
 {
     public string $disk;
     public string $collection_name = '';
-    public bool $without_conversions;
+    public bool $without_conversions = false;
     public $model;
 
     public function disk(string $disk = null)
