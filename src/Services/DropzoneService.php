@@ -4,6 +4,7 @@ namespace TahirRasheed\MediaLibrary\Services;
 
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\MediaUpload;
+use TahirRasheed\MediaLibrary\Models\Media;
 
 class DropzoneService
 {
@@ -19,7 +20,7 @@ class DropzoneService
     {
         $this->request = $request;
 
-        if (isset($request['model']) && !empty($request['model'])) {
+        if (isset($request['model']) && ! empty($request['model'])) {
             return $this->directAssignToModel();
         }
 
@@ -28,7 +29,14 @@ class DropzoneService
 
     public function delete(array $request)
     {
-        Storage::disk($this->disk)->delete('dropzone/temp/' . $request['file_name']);
+        if (! empty($request['media_id'])) {
+            Media::findOrFail($request['media_id'])->delete();
+
+            return;
+        }
+
+        Storage::disk($this->disk)
+            ->delete($this->temporaryPath($request['file_name']));
     }
 
     protected function directAssignToModel()
@@ -57,14 +65,26 @@ class DropzoneService
         $response = [];
 
         foreach ($this->request['file'] as $file) {
-            $file->store('dropzone/temp', $this->disk);
+            $file->store($this->temporaryPath(), $this->disk);
 
             $response[] = [
+                'media_id' => 0,
                 'file_name' => $file->getClientOriginalName(),
                 'new_name' => $file->hashName(),
             ];
         }
 
         return $response;
+    }
+
+    protected function temporaryPath(string $file_name = null)
+    {
+        $path = 'dropzone' . DIRECTORY_SEPARATOR . 'temp';
+
+        if (! $file_name) {
+            return $path;
+        }
+
+        return $path . DIRECTORY_SEPARATOR . $file_name;
     }
 }

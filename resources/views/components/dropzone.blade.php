@@ -34,6 +34,20 @@
       acceptedFiles: ".jpeg,.jpg,.png",
       headers: {
         'X-CSRF-TOKEN': "{{ csrf_token() }}"
+      },
+      init: function() {
+        const thisDropzone = this;
+
+        @if (!empty($attachments))
+          let attachments = @json($attachments);
+
+          attachments.forEach(element => {
+            thisDropzone.options.addedfile.call(thisDropzone, element.mockFile);
+            thisDropzone.options.thumbnail.call(thisDropzone, element.mockFile, element.url);
+            thisDropzone.options.complete.call(thisDropzone, element.mockFile);
+            thisDropzone.files.push(element.mockFile);
+          })
+        @endif
       }
     });
 
@@ -51,6 +65,7 @@
       serverFileName.forEach(element => {
         if (element.file_name === file.upload.filename) {
           file.upload.filename = element.new_name;
+          file.upload.media_id = element.media_id;
           fileList.push(element.new_name);
         }
       });
@@ -79,9 +94,10 @@
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.setRequestHeader("X-CSRF-TOKEN", "{{ csrf_token() }}");
 
-      let data = `{
-        "file_name": "${file_name}"
-      }`;
+      const data = `{
+        "file_name": "${file_name}",
+        "media_id": "${file.upload.media_id}"
+      }`
 
       xhr.send(data);
     });
