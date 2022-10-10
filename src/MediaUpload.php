@@ -19,6 +19,13 @@ class MediaUpload
         $this->disk = config('medialibrary.disk_name');
     }
 
+    public function setModel(Model $model): MediaUpload
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
     public function handle(array $request, string $type, ?Model $model = null): bool
     {
         $this->model = $model;
