@@ -3,7 +3,6 @@
 namespace TahirRasheed\MediaLibrary\View\Components;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Component;
 
 class Dropzone extends Component
