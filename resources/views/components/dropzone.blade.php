@@ -37,6 +37,15 @@
       }
     });
 
+    myDropzone.on("sending", function(file, xhr, formData) {
+      formData.append("type", "{{ $name }}");
+
+      @if ($model)
+        formData.append("model", "{{ class_basename($model) }}");
+        formData.append("model_id", {{ $model->id }});
+      @endif
+    });
+
     myDropzone.on("success", function(file, serverFileName) {
       serverFileName.forEach(element => {
         if (element.file_name === file.upload.filename) {
