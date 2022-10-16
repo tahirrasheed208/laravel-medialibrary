@@ -135,6 +135,43 @@ Or you can use our blade directive.
 @mediaLibraryScript
 ```
 
+## Gallery with Dropzone
+
+```php
+<x-medialibrary-dropzone name="gallery" />
+```
+
+Attach gallery to model using blelow code.
+
+```php
+$model->attachGallery($request->toArray(), 'gallery');
+```
+
+You can also define collection for gallery.
+
+```php
+<x-medialibrary-dropzone name="gallery" collection="dropzone" />
+```
+
+You can define model to dropzone component as well.
+When you define model to component all images are automatically attached to model.
+
+```php
+<x-medialibrary-dropzone name="gallery" :model="$model" />
+```
+
+You can also change the default dropzone message.
+
+```php
+<x-medialibrary-dropzone name="gallery" message="Drop files here" />
+```
+
+## Add Media from Url
+
+```php
+$model->addMediaFromUrl($url, 'image');
+```
+
 ## Implements with Laravel Settings
 
 Install settings package
