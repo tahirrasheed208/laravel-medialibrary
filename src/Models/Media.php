@@ -46,9 +46,9 @@ class Media extends Model
     public function getConversionPath(string $key): string
     {
         if (empty($this->collection_name)) {
-            return $key . DIRECTORY_SEPARATOR . $this->file_name;
+            return "{$key}/{$this->file_name}";
         }
 
-        return $this->collection_name . DIRECTORY_SEPARATOR . $key . DIRECTORY_SEPARATOR . $this->file_name;
+        return "{$this->collection_name}/{$key}/{$this->file_name}";
     }
 }
