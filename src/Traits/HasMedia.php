@@ -4,16 +4,16 @@ namespace TahirRasheed\MediaLibrary\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Conversions\Conversion;
 use TahirRasheed\MediaLibrary\MediaUpload;
+use TahirRasheed\MediaLibrary\MediaUploadFromGallery;
+use TahirRasheed\MediaLibrary\MediaUploadFromUrl;
 use TahirRasheed\MediaLibrary\Models\Media;
 
 trait HasMedia
 {
-    protected string $collection = '';
-    protected ?string $disk = null;
-    protected bool $without_conversions = false;
     public array $mediaConversions = [];
 
     public static function bootHasMedia()
@@ -33,48 +33,31 @@ trait HasMedia
         return $this->morphMany(Media::class, 'imageable')->orderBy('sort_order');
     }
 
-    public function toMediaCollection(string $collection): Model
+    public function addMedia(UploadedFile $file, string $type = 'image'): MediaUpload
     {
-        $this->collection = $collection;
+        $request = [$type => $file];
 
-        return $this;
+        return (new MediaUpload)->addMediaFromRequest($request, $type, $this);
     }
 
-    public function useDisk(string $disk): Model
+    public function addMediaFromRequest(string $type = 'image'): MediaUpload
     {
-        $this->disk = $disk;
-
-        return $this;
+        return (new MediaUpload)->addMediaFromRequest(request()->toArray(), $type, $this);
     }
 
-    public function withoutConversions(): Model
+    public function handleMediaFromRequest(string $type = 'image'): MediaUpload
     {
-        $this->without_conversions = true;
-
-        return $this;
+        return (new MediaUpload)->handleMediaFromRequest(request()->toArray(), $type, $this);
     }
 
-    public function handleMedia(array $request, string $type = 'image')
+    public function attachGalleryToModelFromRequest(string $type = 'gallery'): MediaUploadFromGallery
     {
-        return (new MediaUpload)->disk($this->disk)
-            ->collection($this->collection)
-            ->withoutConversions($this->without_conversions)
-            ->handle($request, $type, $this);
+        return (new MediaUploadFromGallery)->attachGallery(request()->toArray(), $type, $this);
     }
 
-    public function attachGallery(array $request, string $type = 'gallery')
+    public function addMediaFromUrl(string $url, string $type = 'image'): MediaUploadFromUrl
     {
-        return (new MediaUpload)->collection($this->collection)
-            ->withoutConversions($this->without_conversions)
-            ->attachGallery($request, $type, $this);
-    }
-
-    public function addMediaFromUrl(string $url, string $type = 'image')
-    {
-        return (new MediaUpload)->disk($this->disk)
-            ->collection($this->collection)
-            ->withoutConversions($this->without_conversions)
-            ->addMediaFromUrl($url, $type, $this);
+        return (new MediaUploadFromUrl)->addMediaFromUrl($url, $type, $this);
     }
 
     public function hasMedia(string $type = 'image'): bool

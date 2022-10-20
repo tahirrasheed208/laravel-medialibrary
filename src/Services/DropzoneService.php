@@ -46,9 +46,12 @@ class DropzoneService
         $response = [];
 
         foreach ($this->request['file'] as $file) {
-            $media = (new MediaUpload)->setModel($model)
-                ->collection($this->request['collection'])
-                ->upload($file, $this->request['type']);
+            $media = (new MediaUpload)->uploadFromGallery(
+                $model,
+                $this->request['type'],
+                $file,
+                $this->request['collection']
+            );
 
             $response[] = [
                 'media_id' => $media['media_id'],
@@ -79,7 +82,7 @@ class DropzoneService
 
     protected function temporaryPath(string $file_name = null)
     {
-        $path = 'dropzone' . DIRECTORY_SEPARATOR . 'temp';
+        $path = 'temp' . DIRECTORY_SEPARATOR . 'dropzone';
 
         if (! $file_name) {
             return $path;

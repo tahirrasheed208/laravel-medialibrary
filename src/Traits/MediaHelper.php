@@ -5,33 +5,23 @@ namespace TahirRasheed\MediaLibrary\Traits;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use TahirRasheed\MediaLibrary\Exceptions\FileSizeTooBigException;
+use TahirRasheed\MediaLibrary\Exceptions\InvalidConversionException;
+use TahirRasheed\MediaLibrary\Jobs\MediaConversion;
+use TahirRasheed\MediaLibrary\Jobs\ThumbnailConversion;
 use TahirRasheed\MediaLibrary\Models\Media;
 
 trait MediaHelper
 {
+    public string $type;
+    public string $collection;
     public string $disk;
-    public string $collection_name = '';
     public bool $without_conversions = false;
+    public array $request;
     public $model;
 
-    public function disk(string $disk = null)
+    public function useDisk(string $disk)
     {
-        if (! $disk) {
-            return $this;
-        }
-
         $this->disk = $disk;
-
-        return $this;
-    }
-
-    public function collection(string $collection_name = null)
-    {
-        if (! $collection_name) {
-            return $this;
-        }
-
-        $this->collection_name = $collection_name;
 
         return $this;
     }
@@ -50,8 +40,8 @@ trait MediaHelper
 
     protected function getCollection(): string
     {
-        if ($this->collection_name) {
-            return $this->collection_name;
+        if ($this->collection) {
+            return $this->collection;
         }
 
         return $this->getCollectionFromModel();
@@ -84,5 +74,43 @@ trait MediaHelper
         if ($file->getSize() > config('medialibrary.max_file_size')) {
             throw new FileSizeTooBigException();
         }
+    }
+
+    protected function validateModelRegisteredConversions(): void
+    {
+        if ($this->without_conversions) {
+            return;
+        }
+
+        $this->model->registerMediaConversions();
+
+        if (empty($this->model->mediaConversions)) {
+            return;
+        }
+
+        foreach ($this->model->mediaConversions as $conversion) {
+            if (! property_exists($conversion, 'width')) {
+                throw InvalidConversionException::width();
+            }
+
+            if (! property_exists($conversion, 'height')) {
+                throw InvalidConversionException::height();
+            }
+        }
+    }
+
+    protected function dispatchConversionJobs(int $media_id)
+    {
+        ThumbnailConversion::dispatch($media_id);
+
+        if ($this->without_conversions) {
+            return;
+        }
+
+        if (empty($this->model->mediaConversions)) {
+            return;
+        }
+
+        MediaConversion::dispatch($media_id, $this->model->mediaConversions);
     }
 }

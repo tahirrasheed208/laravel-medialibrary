@@ -16,6 +16,13 @@ class MediaUploadForSetting
         $this->disk = config('medialibrary.disk_name');
     }
 
+    public function toMediaCollection(string $collection = '')
+    {
+        $this->collection = $collection;
+
+        return $this;
+    }
+
     public function handle(array $request, string $type, string $option_name)
     {
         $this->deleteOldFileIfRequested($request, $type, $option_name);
