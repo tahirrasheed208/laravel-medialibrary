@@ -4,6 +4,7 @@ namespace TahirRasheed\MediaLibrary\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Conversions\Conversion;
 use TahirRasheed\MediaLibrary\MediaUpload;
@@ -30,6 +31,13 @@ trait HasMedia
     public function attachments()
     {
         return $this->morphMany(Media::class, 'imageable')->orderBy('sort_order');
+    }
+
+    public function addMedia(UploadedFile $file, string $type = 'image'): MediaUpload
+    {
+        $request = [$type => $file];
+
+        return (new MediaUpload)->addMediaFromRequest($request, $type, $this);
     }
 
     public function addMediaFromRequest(string $type = 'image'): MediaUpload
