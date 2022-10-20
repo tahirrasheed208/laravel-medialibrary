@@ -19,12 +19,19 @@
   @endpush
 @endonce
 
+@once
+  @push(config('medialibrary.stack'))
+    <script>
+      Dropzone.autoDiscover = false;
+      var fileList = [];
+    </script>
+  @endpush
+@endonce
+
 @push(config('medialibrary.stack'))
   <script>
-    Dropzone.autoDiscover = false;
-    const fileList = [];
-
-    let myDropzone = new Dropzone("div#{{ $dropzone_id }}", {
+    fileList['{{ $name }}'] = [];
+    new Dropzone("div#{{ $dropzone_id }}", {
       url: "{{ route('medialibrary.dropzone.upload') }}",
       addRemoveLinks: true,
       uploadMultiple: true,
@@ -48,58 +55,58 @@
             thisDropzone.files.push(element.mockFile);
           })
         @endif
+
+        thisDropzone.on("sending", function(file, xhr, formData) {
+          formData.append("type", "{{ $name }}");
+          formData.append("collection", "{{ $collection }}");
+
+          @if ($model)
+            formData.append("model", "{{ class_basename($model) }}");
+            formData.append("model_id", {{ $model->id }});
+          @endif
+        });
+
+        thisDropzone.on("success", function(file, serverFileName) {
+          serverFileName.forEach(element => {
+            if (element.file_name === file.upload.filename) {
+              file.upload.filename = element.new_name;
+              file.upload.media_id = element.media_id;
+              fileList['{{ $name }}'].push(element.new_name);
+            }
+          });
+        });
+
+        thisDropzone.on("complete", function(file) {
+          if (file.status === 'error') {
+            return;
+          }
+
+          document.getElementById('{{ $name }}').value = fileList['{{ $name }}'].toString();
+        });
+
+        thisDropzone.on("removedfile", function(file) {
+          let file_name = file.upload.filename;
+
+          const index = fileList['{{ $name }}'].indexOf(file_name);
+          if (index > -1) {
+            fileList['{{ $name }}'].splice(index, 1);
+            document.getElementById('{{ $name }}').value = fileList['{{ $name }}'].toString();
+          }
+
+          let xhr = new XMLHttpRequest();
+          xhr.open("POST", "{{ route('medialibrary.dropzone.delete') }}");
+          xhr.setRequestHeader("Accept", "application/json");
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.setRequestHeader("X-CSRF-TOKEN", "{{ csrf_token() }}");
+
+          const data = `{
+            "file_name": "${file_name}",
+            "media_id": "${file.upload.media_id}"
+          }`
+
+          xhr.send(data);
+        });
       }
-    });
-
-    myDropzone.on("sending", function(file, xhr, formData) {
-      formData.append("type", "{{ $name }}");
-      formData.append("collection", "{{ $collection }}");
-
-      @if ($model)
-        formData.append("model", "{{ class_basename($model) }}");
-        formData.append("model_id", {{ $model->id }});
-      @endif
-    });
-
-    myDropzone.on("success", function(file, serverFileName) {
-      serverFileName.forEach(element => {
-        if (element.file_name === file.upload.filename) {
-          file.upload.filename = element.new_name;
-          file.upload.media_id = element.media_id;
-          fileList.push(element.new_name);
-        }
-      });
-    });
-
-    myDropzone.on("complete", function(file) {
-      if (file.status === 'error') {
-        return;
-      }
-
-      document.getElementById('{{ $name }}').value = fileList.toString();
-    });
-
-    myDropzone.on("removedfile", function(file) {
-      let file_name = file.upload.filename;
-
-      const index = fileList.indexOf(file_name);
-      if (index > -1) {
-        fileList.splice(index, 1);
-        document.getElementById('{{ $name }}').value = fileList.toString();
-      }
-
-      let xhr = new XMLHttpRequest();
-      xhr.open("POST", "{{ route('medialibrary.dropzone.delete') }}");
-      xhr.setRequestHeader("Accept", "application/json");
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.setRequestHeader("X-CSRF-TOKEN", "{{ csrf_token() }}");
-
-      const data = `{
-        "file_name": "${file_name}",
-        "media_id": "${file.upload.media_id}"
-      }`
-
-      xhr.send(data);
     });
   </script>
 @endpush
