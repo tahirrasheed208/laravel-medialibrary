@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Conversions\Conversion;
+use TahirRasheed\MediaLibrary\Media\FileAdder;
 use TahirRasheed\MediaLibrary\MediaUpload;
 use TahirRasheed\MediaLibrary\Models\Media;
 
@@ -52,6 +53,11 @@ trait HasMedia
         $this->without_conversions = true;
 
         return $this;
+    }
+
+    public function addMediaFromRequest(string $type = 'image'): FileAdder
+    {
+        return (new FileAdder)->addMediaFromRequest(request()->toArray(), $type, $this);
     }
 
     public function handleMedia(array $request, string $type = 'image')
