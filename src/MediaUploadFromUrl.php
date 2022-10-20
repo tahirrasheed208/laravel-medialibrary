@@ -30,7 +30,7 @@ class MediaUploadFromUrl
         return $this;
     }
 
-    public function toMediaCollection(string $collection = '')
+    public function toMediaCollection(string $collection = ''): array
     {
         $this->collection = $collection;
 

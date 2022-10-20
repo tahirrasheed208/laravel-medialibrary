@@ -26,9 +26,13 @@ class MediaUploadFromGallery
         return $this;
     }
 
-    public function toMediaCollection(string $collection = '')
+    public function toMediaCollection(string $collection = ''): bool
     {
         $this->collection = $collection;
+
+        if (! isset($this->request[$this->type])) {
+            return false;
+        }
 
         $files = explode(',', $this->request[$this->type]);
 
