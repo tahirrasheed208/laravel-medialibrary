@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Conversions\Conversion;
 use TahirRasheed\MediaLibrary\MediaUpload;
+use TahirRasheed\MediaLibrary\MediaUploadFromUrl;
 use TahirRasheed\MediaLibrary\Models\Media;
 
 trait HasMedia
@@ -45,32 +46,16 @@ trait HasMedia
     //     return (new MediaUpload)->attachGallery(request()->toArray(), $type, $this);
     // }
 
-    // public function addMediaFromUrl(string $url, string $type = 'image'): MediaUpload
-    // {
-    //     return (new MediaUpload)->addMediaFromUrl($url, $type, $this);
-    // }
-
-    // public function handleMedia(array $request, string $type = 'image')
-    // {
-    //     return (new MediaUpload)->disk($this->disk)
-    //         ->collection($this->collection)
-    //         ->withoutConversions($this->without_conversions)
-    //         ->handle($request, $type, $this);
-    // }
+    public function addMediaFromUrl(string $url, string $type = 'image'): MediaUploadFromUrl
+    {
+        return (new MediaUploadFromUrl)->addMediaFromUrl($url, $type, $this);
+    }
 
     // public function attachGallery(array $request, string $type = 'gallery')
     // {
     //     return (new MediaUpload)->collection($this->collection)
     //         ->withoutConversions($this->without_conversions)
     //         ->attachGallery($request, $type, $this);
-    // }
-
-    // public function addMediaFromUrl(string $url, string $type = 'image')
-    // {
-    //     return (new MediaUpload)->disk($this->disk)
-    //         ->collection($this->collection)
-    //         ->withoutConversions($this->without_conversions)
-    //         ->addMediaFromUrl($url, $type, $this);
     // }
 
     public function hasMedia(string $type = 'image'): bool
