@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Conversions\Conversion;
 use TahirRasheed\MediaLibrary\MediaUpload;
+use TahirRasheed\MediaLibrary\MediaUploadFromGallery;
 use TahirRasheed\MediaLibrary\MediaUploadFromUrl;
 use TahirRasheed\MediaLibrary\Models\Media;
 
@@ -41,22 +42,15 @@ trait HasMedia
         return (new MediaUpload)->handleMediaFromRequest(request()->toArray(), $type, $this);
     }
 
-    // public function attachGalleryToModelFromRequest(string $type = 'image'): MediaUpload
-    // {
-    //     return (new MediaUpload)->attachGallery(request()->toArray(), $type, $this);
-    // }
+    public function attachGalleryToModelFromRequest(string $type = 'gallery'): MediaUploadFromGallery
+    {
+        return (new MediaUploadFromGallery)->attachGallery(request()->toArray(), $type, $this);
+    }
 
     public function addMediaFromUrl(string $url, string $type = 'image'): MediaUploadFromUrl
     {
         return (new MediaUploadFromUrl)->addMediaFromUrl($url, $type, $this);
     }
-
-    // public function attachGallery(array $request, string $type = 'gallery')
-    // {
-    //     return (new MediaUpload)->collection($this->collection)
-    //         ->withoutConversions($this->without_conversions)
-    //         ->attachGallery($request, $type, $this);
-    // }
 
     public function hasMedia(string $type = 'image'): bool
     {

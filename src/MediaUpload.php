@@ -57,6 +57,15 @@ class MediaUpload
         return $this->upload($file);
     }
 
+    public function uploadFromGallery(Model $model, string $type, UploadedFile $file, string $collection = '')
+    {
+        $this->model = $model;
+        $this->type = $type;
+        $this->collection = $collection;
+
+        return $this->upload($file);
+    }
+
     private function upload(UploadedFile $file): array
     {
         $this->checkMaxFileUploadSize($file);
