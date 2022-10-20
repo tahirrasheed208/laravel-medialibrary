@@ -25,6 +25,7 @@ class MediaUploadFromUrl
         $this->model = $model;
 
         $this->validateUrlHasValidImage($url);
+        $this->validateModelRegisteredConversions();
 
         return $this;
     }
