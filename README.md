@@ -2,6 +2,9 @@
 
 This package can associate images with Eloquent models.
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/tahirrasheed208/laravel-medialibrary.svg?style=flat-square)](https://packagist.org/packages/tahirrasheed208/laravel-medialibrary)
+[![Total Downloads](https://img.shields.io/packagist/dt/tahirrasheed208/laravel-medialibrary.svg?style=flat-square)](https://packagist.org/packages/tahirrasheed208/laravel-medialibrary)
+
 ## Getting Started
 
 ### 1. Install
@@ -48,19 +51,19 @@ For display old image in edit page.
 
 ```php
 $model = Model::find(1);
-$model->handleMedia($request->toArray());
+$model->handleMediaFromRequest()->toMediaCollection();
 ```
 
 If your file input name is not `image` then define second param.
 
 ```php
-$model->handleMedia($request->toArray(), 'banner');
+$model->handleMediaFromRequest('banner')->toMediaCollection();
 ```
 
 Upload to specific collection.
 
 ```php
-$model->toMediaCollection('images')->handleMedia($request->toArray());
+$model->handleMediaFromRequest()->toMediaCollection('images');
 ```
 
 You can define default collection at eloquent level. Add below function in your model.
@@ -75,7 +78,7 @@ public function defaultCollection(): string
 Upload to specific disk.
 
 ```php
-$model->useDisk('s3')->handleMedia($request->toArray());
+$model->handleMediaFromRequest()->useDisk('s3')->toMediaCollection();
 ```
 
 ### Register Media Conversions
@@ -118,7 +121,7 @@ $this->addMediaConversion('post_main')
 If you want to disable registered conversions on some files
 
 ```php
-$model->withoutConversions()->handleMedia($request->toArray());
+$model->handleMediaFromRequest()->withoutConversions()->toMediaCollection();
 ```
 
 ## Configuration
@@ -144,7 +147,7 @@ Or you can use our blade directive.
 Attach gallery to model using blelow code.
 
 ```php
-$model->attachGallery($request->toArray(), 'gallery');
+$model->attachGalleryToModelFromRequest('gallery')->toMediaCollection();
 ```
 
 You can also define collection for gallery.
@@ -169,7 +172,7 @@ You can also change the default dropzone message.
 ## Add Media from Url
 
 ```php
-$model->addMediaFromUrl($url, 'image');
+$model->addMediaFromUrl($url, 'image')->toMediaCollection();
 ```
 
 ## Implements with Laravel Settings
