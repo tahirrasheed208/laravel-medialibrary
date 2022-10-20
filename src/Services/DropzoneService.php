@@ -50,7 +50,7 @@ class DropzoneService
                 $model,
                 $this->request['type'],
                 $file,
-                $this->request['collection']
+                $this->request['collection'] ?: ''
             );
 
             $response[] = [

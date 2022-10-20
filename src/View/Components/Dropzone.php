@@ -12,11 +12,11 @@ class Dropzone extends Component
     public string $message;
     public int $max_file_size;
     public int $max_files = 20;
-    public ?string $collection;
+    public string $collection;
     public array $attachments = [];
     public $model;
 
-    public function __construct(string $name, string $message = null, Model $model = null, string $collection = null)
+    public function __construct(string $name, string $message = null, Model $model = null, string $collection = '')
     {
         $this->name = $name;
         $this->dropzone_id = "dropzone_{$name}";
