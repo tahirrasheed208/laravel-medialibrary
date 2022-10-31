@@ -19,7 +19,11 @@ trait HasMedia
     public static function bootHasMedia()
     {
         static::deleting(function (Model $model) {
-            $model->attachments()->delete();
+            $attachments = $model->attachments()->get();
+
+            foreach ($attachments as $item) {
+                $item->delete();
+            }
         });
     }
 
