@@ -99,9 +99,13 @@ trait MediaHelper
         }
     }
 
-    protected function dispatchConversionJobs(int $media_id)
+    protected function dispatchConversionJobs(Media $media)
     {
-        ThumbnailConversion::dispatch($media_id);
+        if (! in_array($media->mime_type, $this->allowedMimeTypesForConversion())) {
+            return;
+        }
+
+        ThumbnailConversion::dispatch($media->id);
 
         if ($this->without_conversions) {
             return;
@@ -111,6 +115,11 @@ trait MediaHelper
             return;
         }
 
-        MediaConversion::dispatch($media_id, $this->model->mediaConversions);
+        MediaConversion::dispatch($media->id, $this->model->mediaConversions);
+    }
+
+    protected function allowedMimeTypesForConversion()
+    {
+        return ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     }
 }

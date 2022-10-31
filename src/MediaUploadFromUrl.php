@@ -53,7 +53,7 @@ class MediaUploadFromUrl
 
         $this->setDefaultConversions($media);
 
-        $this->dispatchConversionJobs($media->id);
+        $this->dispatchConversionJobs($media);
 
         return [
             'media_id' => $media->id,

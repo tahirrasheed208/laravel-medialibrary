@@ -65,7 +65,7 @@ class MediaUploadFromGallery
 
             $this->setDefaultConversions($media);
 
-            $this->dispatchConversionJobs($media->id);
+            $this->dispatchConversionJobs($media);
         }
     }
 }

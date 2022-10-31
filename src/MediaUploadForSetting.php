@@ -54,7 +54,9 @@ class MediaUploadForSetting
 
         $this->setDefaultConversions($media);
 
-        ThumbnailConversion::dispatch($media->id);
+        if (in_array($media->mime_type, $this->allowedMimeTypesForConversion())) {
+            ThumbnailConversion::dispatch($media->id);
+        }
 
         return [
             'media_id' => $media->id,
