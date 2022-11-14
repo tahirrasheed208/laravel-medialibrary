@@ -47,7 +47,7 @@ class ConversionHelper
 
         $image = Image::make($original_image);
 
-        if ($image->width() > $image->height()) {
+        if ($image->width() >= $image->height()) {
             return $image->resize($conversion->width, null, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
