@@ -12,6 +12,8 @@ function chooseFile(element) {
     readFile(element);
     element.parentElement.querySelector('.lm-upload-button').classList.add('d-none');
     element.parentElement.querySelector('.lm-remove-button').classList.remove('d-none');
+
+    setRemoveFieldValue(element);
 }
 
 function removeFile(element) {
@@ -20,11 +22,7 @@ function removeFile(element) {
     element.classList.add('d-none');
     element.parentElement.querySelector('.lm-upload-button').classList.remove('d-none');
 
-    let remove_field = element.parentElement.querySelector('input[type=hidden]');
-
-    if (remove_field) {
-        remove_field.value = 'yes';
-    }
+    setRemoveFieldValue(element);
 }
 
 function readFile(input) {
@@ -41,4 +39,12 @@ function readFile(input) {
     };
 
     reader.readAsDataURL(input.files[0]);
+}
+
+function setRemoveFieldValue(element) {
+    let remove_field = element.parentElement.querySelector('input[type=hidden]');
+
+    if (remove_field) {
+        remove_field.value = 'yes';
+    }
 }
