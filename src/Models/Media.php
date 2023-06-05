@@ -32,18 +32,21 @@ class Media extends Model
             return $this->getConversionPath($key);
         }
 
-        if (empty($conversions)) {
-            throw new ConversionNotAvailableException();
+        $environment = config('app.env');
+        $conversionNotAvailable = empty($conversions) || ! isset($conversions[$key]);
+
+        if ($environment === 'production' && $conversionNotAvailable) {
+            return $this->getConversionPath();
         }
 
-        if (! isset($conversions[$key])) {
+        if ($conversionNotAvailable) {
             throw new ConversionNotAvailableException();
         }
 
         return $conversions[$key];
     }
 
-    public function getConversionPath(string $key): string
+    public function getConversionPath(string $key = 'original'): string
     {
         if (empty($this->collection_name)) {
             return "{$key}/{$this->file_name}";
