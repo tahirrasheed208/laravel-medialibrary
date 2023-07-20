@@ -19,6 +19,11 @@ return [
     'max_file_size' => 1024 * 1024 * 2, // 2MB
 
     /*
+     * The maximum file size of an item in bytes.
+     */
+    'max_files' => 20,
+
+    /*
      * Leave empty to use the default queue.
      */
     'queue_name' => '',

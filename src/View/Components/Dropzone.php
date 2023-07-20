@@ -10,13 +10,13 @@ class Dropzone extends Component
     public string $name;
     public string $dropzone_id;
     public string $message;
-    public int $max_file_size;
-    public int $max_files = 20;
     public string $collection;
+    public int $max_file_size;
+    public int $max_files;
     public array $attachments = [];
     public $model;
 
-    public function __construct(string $name, string $message = null, Model $model = null, string $collection = '')
+    public function __construct(string $name, string $message = null, Model $model = null, string $collection = '', int $maxfiles = 0)
     {
         $this->name = $name;
         $this->dropzone_id = "dropzone_{$name}";
@@ -24,6 +24,7 @@ class Dropzone extends Component
         $this->collection = $collection;
         $this->message = $message ?: __('Drop files here or click to upload.');
         $this->max_file_size = round(config('medialibrary.max_file_size') / 1024 / 1024, 4);
+        $this->max_files = !empty($maxfiles) ? $maxfiles : config('medialibrary.max_files');
 
         if ($model) {
             $attachments = $model->getAttachments($name);
