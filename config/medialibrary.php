@@ -19,7 +19,7 @@ return [
     'max_file_size' => 1024 * 1024 * 2, // 2MB
 
     /*
-     * The maximum file size of an item in bytes.
+     * The maximum files upload in dropzone.
      */
     'max_files' => 20,
 
