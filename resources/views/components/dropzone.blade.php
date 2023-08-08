@@ -38,7 +38,7 @@
       parallelUploads: {{ $max_files }},
       maxFiles: {{ $max_files }},
       maxFilesize: {{ $max_file_size }}, // MB
-      acceptedFiles: ".jpeg,.jpg,.png",
+      acceptedFiles: "{{ config('medialibrary.accept_files') }}",
       headers: {
         'X-CSRF-TOKEN': "{{ csrf_token() }}"
       },

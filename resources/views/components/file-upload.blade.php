@@ -3,7 +3,7 @@
     <img class="img-thumbnail" src="{{ $thumbnail }}" width="150" onclick="changeFile(this)">
   </div>
   <button class="{{ $uploadButtonClasses }}" type="button" onclick="uploadFile(this)">{{ __('Upload') }}</button>
-  <input name="{{ $name }}" type="file" class="d-none" onchange="chooseFile(this)">
+  <input name="{{ $name }}" type="file" class="d-none" accept="{{ $accept }}" onchange="chooseFile(this)">
   <button class="{{ $removeButtonClasses }}" type="button" onclick="removeFile(this)">{{ __('Remove') }}</button>
   @if ($file)
     <input type="hidden" name="remove_{{ $name }}" value="no">

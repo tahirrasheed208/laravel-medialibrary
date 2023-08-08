@@ -24,6 +24,11 @@ return [
     'max_files' => 20,
 
     /*
+     * Global accept files.
+     */
+    'accept_files' => '.jpeg,.jpg,.png',
+
+    /*
      * Leave empty to use the default queue.
      */
     'queue_name' => '',

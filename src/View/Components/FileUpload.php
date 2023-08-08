@@ -9,14 +9,20 @@ use Illuminate\View\Component;
 class FileUpload extends Component
 {
     public string $name;
+
     public string $inputId;
+
     public bool $file = false;
+
     public string $thumbnail = '';
 
-    public function __construct(string $name, string $inputId = null, Model $model = null, string $setting = null)
+    public string $accept = '';
+
+    public function __construct(string $name, string $inputId = null, Model $model = null, string $setting = null, string $accept = '')
     {
         $this->name = $name;
         $this->inputId = !is_null($inputId) ?: $name;
+        $this->accept = $this->setAcceptedFiles($accept);
 
         if ($setting) {
             $this->file = true;
@@ -63,5 +69,14 @@ class FileUpload extends Component
             'lm-remove-button',
             'd-none' => !$this->file
         ]);
+    }
+
+    protected function setAcceptedFiles($accept)
+    {
+        if (! empty($accept)) {
+            return $accept;
+        }
+
+        return config('medialibrary.accept_files');
     }
 }
