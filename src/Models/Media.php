@@ -54,4 +54,14 @@ class Media extends Model
 
         return "{$this->collection_name}/{$key}/{$this->file_name}";
     }
+
+    public function toArray()
+    {
+        $attributes = parent::toArray();
+
+        $attributes['url'] = $this->getUrl();
+        $attributes['thumbnail_url'] = $this->getUrl('thumbnail');
+
+        return $attributes;
+    }
 }
