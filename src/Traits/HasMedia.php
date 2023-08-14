@@ -54,6 +54,11 @@ trait HasMedia
         return (new MediaUpload)->handleMediaFromRequest(request()->toArray(), $type, $this);
     }
 
+    public function uploadFromLivewire($files, string $type = 'image')
+    {
+        return (new MediaUpload)->uploadFromLivewire($this, $type, $files);
+    }
+
     public function attachGalleryToModelFromRequest(string $type = 'gallery'): MediaUploadFromGallery
     {
         return (new MediaUploadFromGallery)->attachGallery(request()->toArray(), $type, $this);

@@ -66,6 +66,23 @@ class MediaUpload
         return $this->upload($file);
     }
 
+    public function uploadFromLivewire(Model $model, string $type, $files, string $collection = '')
+    {
+        $this->model = $model;
+        $this->type = $type;
+        $this->collection = $collection;
+
+        if (! is_array($files)) {
+            $files[] = $files;
+        }
+
+        foreach ($files as $file) {
+            $this->upload($file);
+        }
+
+        return "success";
+    }
+
     private function upload(UploadedFile $file): array
     {
         $this->checkMaxFileUploadSize($file);
