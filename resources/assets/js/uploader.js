@@ -9,7 +9,15 @@ function changeFile(element) {
 }
 
 function chooseFile(element) {
+    let size_limit = element.dataset.size;
+
+    if (element.files[0].size > size_limit) {
+        element.parentElement.querySelector('.lm-size-error-message').classList.remove('d-none');
+        return;
+    }
+
     readFile(element);
+    element.parentElement.querySelector('.lm-size-error-message').classList.add('d-none');
     element.parentElement.querySelector('.lm-upload-button').classList.add('d-none');
     element.parentElement.querySelector('.lm-remove-button').classList.remove('d-none');
 
