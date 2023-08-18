@@ -13,6 +13,7 @@ function chooseFile(element) {
 
     if (element.files[0].size > size_limit) {
         element.parentElement.querySelector('.lm-size-error-message').classList.remove('d-none');
+        element.value = '';
         return;
     }
 
