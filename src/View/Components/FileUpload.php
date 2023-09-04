@@ -14,9 +14,13 @@ class FileUpload extends Component
 
     public bool $file = false;
 
+    public bool $isImage = false;
+
     public string $thumbnail = '';
 
     public string $accept = '';
+
+    public string $fileName = '';
 
     public function __construct(string $name, string $inputId = null, Model $model = null, string $setting = null, string $accept = '')
     {
@@ -30,6 +34,13 @@ class FileUpload extends Component
         }
 
         if ($model) {
+            $media = $model->getMedia($name);
+
+            if ($media) {
+                $this->isImage = $media->isImage();
+                $this->fileName = $media->name;
+            }
+
             $this->file = $model->hasMedia($name);
             $this->thumbnail = $model->getThumbnailUrl($name);
         }
@@ -45,7 +56,16 @@ class FileUpload extends Component
         return Arr::toCssClasses([
             'lm-img-preview',
             'mb-2',
-            'd-none' => !$this->file
+            'd-none' => !$this->file || !$this->isImage
+        ]);
+    }
+
+    public function filePreviewClasses(): string
+    {
+        return Arr::toCssClasses([
+            'lm-file-preview',
+            'mb-2',
+            'd-none' => !$this->file || $this->isImage
         ]);
     }
 

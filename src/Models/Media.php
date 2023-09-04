@@ -64,4 +64,11 @@ class Media extends Model
 
         return $attributes;
     }
+
+    public function isImage()
+    {
+        $types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+        return in_array($this->mime_type, $types);
+    }
 }

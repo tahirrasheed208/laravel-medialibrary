@@ -28,6 +28,7 @@ function chooseFile(element) {
 function removeFile(element) {
     element.parentElement.querySelector('input[type=file]').value = '';
     element.parentElement.querySelector('.lm-img-preview').classList.add('d-none');
+    element.parentElement.querySelector('.lm-file-preview').classList.add('d-none');
     element.classList.add('d-none');
     element.parentElement.querySelector('.lm-upload-button').classList.remove('d-none');
 
@@ -36,6 +37,16 @@ function removeFile(element) {
 
 function readFile(input) {
     if (!input.files || input.files.length == 0) {
+        return;
+    }
+
+    if (! isImage(input.files[0].type)) {
+        input.parentElement.querySelector('.lm-img-preview').classList.add('d-none');
+
+        let target = input.parentElement.querySelector('.lm-file-preview');
+        target.classList.remove('d-none');
+        target.querySelector('div').innerHTML = `<a href="javascript:;" class="btn-link">${input.files[0].name}</a>`;
+
         return;
     }
 
@@ -56,4 +67,10 @@ function setRemoveFieldValue(element) {
     if (remove_field) {
         remove_field.value = 'yes';
     }
+}
+
+function isImage(type) {
+    let types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+    return types.includes(type);
 }
