@@ -46,7 +46,7 @@ class MediaLibraryServiceProvider extends ServiceProvider
         Media::observe(MediaObserver::class);
 
         Blade::directive('mediaLibraryScript', function () {
-            return "<script src='".route('medialibrary.uploader')."?ver=2.4.1'></script>";
+            return "<script src='".route('medialibrary.uploader')."?ver=2.4.2'></script>";
         });
     }
 }
