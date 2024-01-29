@@ -25,8 +25,16 @@ class Dropzone extends Component
 
     public $model;
 
-    public function __construct(string $name, string $message = null, Model $model = null, string $collection = '', int $maxfiles = 0, string $accept = '', int|null $filesize = null)
-    {
+    public function __construct(
+        string $name,
+        string $message = null,
+        Model $model = null,
+        string $collection = '',
+        int $maxfiles = 0,
+        string $accept = '',
+        int|null $filesize = null,
+        bool $hideimages = false,
+    ) {
         $this->name = $name;
         $this->dropzone_id = "dropzone_{$name}";
         $this->model = $model;
@@ -36,7 +44,7 @@ class Dropzone extends Component
         $this->max_file_size = $this->setMaxFilesSize($filesize);
         $this->accept = $this->setAcceptedFiles($accept);
 
-        if ($model) {
+        if ($model && ! $hideimages) {
             $attachments = $model->getAttachments($name);
 
             foreach ($attachments as $attachment) {
