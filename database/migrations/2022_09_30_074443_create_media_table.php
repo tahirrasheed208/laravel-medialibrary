@@ -19,7 +19,7 @@ class CreateMediaTable extends Migration
             $table->string('type', 50)->default('image')->index();
             $table->string('file_name', 255)->nullable();
             $table->string('name', 255)->nullable();
-            $table->string('mime_type', 50)->nullable();
+            $table->string('mime_type', 255)->nullable();
             $table->unsignedBigInteger('size');
             $table->string('disk', 50);
             $table->string('collection_name', 50)->nullable();
