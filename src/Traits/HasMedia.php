@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Conversions\Conversion;
 use TahirRasheed\MediaLibrary\MediaUpload;
+use TahirRasheed\MediaLibrary\MediaUploadFromBase64;
 use TahirRasheed\MediaLibrary\MediaUploadFromGallery;
 use TahirRasheed\MediaLibrary\MediaUploadFromUrl;
 use TahirRasheed\MediaLibrary\Models\Media;
@@ -67,6 +68,11 @@ trait HasMedia
     public function addMediaFromUrl(string $url, string $type = 'image'): MediaUploadFromUrl
     {
         return (new MediaUploadFromUrl)->addMediaFromUrl($url, $type, $this);
+    }
+
+    public function addMediaFromBase64(string $base64, string $format = 'png', string $type = 'image'): MediaUploadFromBase64
+    {
+        return (new MediaUploadFromBase64)->add($base64, $format, $type, $this);
     }
 
     public function hasMedia(string $type = 'image'): bool
