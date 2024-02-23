@@ -65,9 +65,9 @@ trait HasMedia
         return (new MediaUploadFromGallery)->attachGallery(request()->toArray(), $type, $this);
     }
 
-    public function addMediaFromUrl(string $url, string $type = 'image'): MediaUploadFromUrl
+    public function addMediaFromUrl(string $url, string $type = 'image', string|null $title = null): MediaUploadFromUrl
     {
-        return (new MediaUploadFromUrl)->addMediaFromUrl($url, $type, $this);
+        return (new MediaUploadFromUrl)->addMediaFromUrl($url, $type, $this, $title);
     }
 
     public function addMediaFromBase64(string $base64, string $format = 'png', string $type = 'image'): MediaUploadFromBase64

@@ -13,16 +13,19 @@ class MediaUploadFromUrl
 
     public string $url;
 
+    public string|null $title;
+
     public function __construct()
     {
         $this->disk = config('medialibrary.disk_name');
     }
 
-    public function addMediaFromUrl(string $url, string $type, Model $model): MediaUploadFromUrl
+    public function addMediaFromUrl(string $url, string $type, Model $model, string|null $title = null): MediaUploadFromUrl
     {
         $this->url = $url;
         $this->type = $type;
         $this->model = $model;
+        $this->title = $title;
 
         $this->validateUrlHasValidImage($url);
         $this->validateModelRegisteredConversions();
@@ -38,12 +41,16 @@ class MediaUploadFromUrl
         $file_name = uniqid() . '_' . $name;
         $file_path = $this->getFileUploadPath() . DIRECTORY_SEPARATOR . $file_name;
 
+        if (! $this->title) {
+            $this->title = $name;
+        }
+
         Storage::disk($this->disk)->put($file_path, file_get_contents($this->url), 'public');
 
         $media = $this->model->attachments()->create([
             'type' => $this->type,
             'file_name' => $file_name,
-            'name' => $name,
+            'name' => $this->title,
             'mime_type' => Storage::disk($this->disk)->mimeType($file_path),
             'size' => Storage::disk($this->disk)->size($file_path),
             'disk' => $this->disk,
