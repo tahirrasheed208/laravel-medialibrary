@@ -186,7 +186,7 @@ composer require tahirrasheed208/laravel-settings
 Blade component to display old file
 
 ```php
-<x-medialibrary-file-upload name="image" setting="{{ setting()->getFile('name') }}" />
+<x-medialibrary-file-upload name="image" setting="{{ setting()->get('name') }}" />
 ```
 
 To upload file
@@ -201,7 +201,7 @@ By default we expect file name is your option name, but you can define your opti
 setting()->upload($request->toArray(), 'file_name', 'option_name');
 ```
 
-### Get Uploaded File
+### Get Uploaded File Url
 
 ```php
 setting()->getFile('name');

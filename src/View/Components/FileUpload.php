@@ -5,6 +5,7 @@ namespace TahirRasheed\MediaLibrary\View\Components;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\View\Component;
+use TahirRasheed\MediaLibrary\Models\Media;
 
 class FileUpload extends Component
 {
@@ -22,15 +23,21 @@ class FileUpload extends Component
 
     public string $fileName = '';
 
-    public function __construct(string $name, string $inputId = null, Model $model = null, string $setting = null, string $accept = '')
+    public function __construct(string $name, string $inputId = null, Model $model = null, mixed $setting = null, string $accept = '')
     {
         $this->name = $name;
         $this->inputId = !is_null($inputId) ?: $name;
         $this->accept = $this->setAcceptedFiles($accept);
 
         if ($setting) {
-            $this->file = true;
-            $this->thumbnail = $setting;
+            $media = Media::find($setting);
+
+            if ($media) {
+                $this->file = true;
+                $this->thumbnail = $media->getUrl('thumbnail');
+                $this->isImage = $media->isImage();
+                $this->fileName = $media->name;
+            }
         }
 
         if ($model) {
