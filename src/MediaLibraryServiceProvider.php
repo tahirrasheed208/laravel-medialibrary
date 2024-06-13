@@ -18,9 +18,11 @@ class MediaLibraryServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/medialibrary.php', 'medialibrary'
-        );
+        if (! app()->configurationIsCached()) {
+            $this->mergeConfigFrom(
+                __DIR__.'/../config/medialibrary.php', 'medialibrary'
+            );
+        }
     }
 
     /**
@@ -30,13 +32,18 @@ class MediaLibraryServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'medialibrary');
 
-        $this->publishes([
-            __DIR__.'/../config/medialibrary.php' => config_path('medialibrary.php'),
-        ], 'config');
+        if (app()->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/medialibrary.php' => config_path('medialibrary.php'),
+            ], 'medialibrary-config');
+
+            $this->publishesMigrations([
+                __DIR__.'/../database/migrations' => database_path('migrations'),
+            ], 'medialibrary-migration');
+        }
 
         $this->loadViewComponentsAs('medialibrary', [
             FileUpload::class,
