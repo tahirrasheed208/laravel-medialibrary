@@ -4,7 +4,7 @@ namespace TahirRasheed\MediaLibrary\Conversions;
 
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Models\Media;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\Laravel\Facades\Image;
 
 class ConversionHelper
 {
@@ -29,35 +29,25 @@ class ConversionHelper
         $image = $this->resizeMedia($original_image, $conversion);
 
         Storage::disk($this->media->disk)
-            ->put($this->media->getConversionPath($conversion->name), $image->stream(), 'public');
+            ->put($this->media->getConversionPath($conversion->name), $image->encodeByMediaType()->toFilePointer(), 'public');
 
         $this->updateConversionsAttribute($conversion->name);
     }
 
     protected function resizeMedia(string $original_image, Conversion $conversion)
     {
-        Image::configure(['driver' => config('medialibrary.image_driver')]);
-
         if ($conversion->crop) {
-            return Image::make($original_image)
-                ->fit($conversion->width, $conversion->height, function ($constraint) {
-                    $constraint->upsize();
-                }, $conversion->position);
+            return Image::read($original_image)
+                ->resizeDown($conversion->width, $conversion->height, $conversion->position);
         }
 
-        $image = Image::make($original_image);
+        $image = Image::read($original_image);
 
         if ($image->width() >= $image->height()) {
-            return $image->resize($conversion->width, null, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
+            return $image->scaleDown($conversion->width);
         }
 
-        return $image->resize(null, $conversion->height, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        });
+        return $image->scaleDown(height: $conversion->height);
     }
 
     public function generateThumbnailConversion(int $media_id): void
@@ -78,13 +68,11 @@ class ConversionHelper
         $original_image = Storage::disk($this->media->disk)
             ->get($this->media->getFilePath());
 
-        Image::configure(['driver' => config('medialibrary.image_driver')]);
-
-        $image = Image::make($original_image)
-            ->fit($width, $height);
+        $image = Image::read($original_image)
+            ->cover($width, $height);
 
         Storage::disk($this->media->disk)
-            ->put($this->media->getConversionPath('thumbnail'), $image->stream(), 'public');
+            ->put($this->media->getConversionPath('thumbnail'), $image->encodeByMediaType()->toFilePointer(), 'public');
 
         $this->updateConversionsAttribute('thumbnail');
     }

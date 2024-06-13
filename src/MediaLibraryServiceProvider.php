@@ -4,6 +4,8 @@ namespace TahirRasheed\MediaLibrary;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Drivers\Imagick\Driver;
 use TahirRasheed\MediaLibrary\Models\Media;
 use TahirRasheed\MediaLibrary\Observers\MediaObserver;
 use TahirRasheed\MediaLibrary\View\Components\Dropzone;
@@ -45,6 +47,12 @@ class MediaLibraryServiceProvider extends ServiceProvider
             ], 'medialibrary-migration');
         }
 
+        if (config('medialibrary.image_driver') === 'imagick') {
+            config(['image.driver' => Driver::class]);
+        } else {
+            config(['image.driver' => GdDriver::class]);
+        }
+
         $this->loadViewComponentsAs('medialibrary', [
             FileUpload::class,
             Dropzone::class,
@@ -53,7 +61,7 @@ class MediaLibraryServiceProvider extends ServiceProvider
         Media::observe(MediaObserver::class);
 
         Blade::directive('mediaLibraryScript', function () {
-            return "<script src='".route('medialibrary.uploader')."?ver=2.4.6'></script>";
+            return "<script src='".route('medialibrary.uploader')."?ver=3.0.0'></script>";
         });
     }
 }
