@@ -20,12 +20,18 @@ composer require tahirrasheed208/laravel-medialibrary
 Publish config file.
 
 ```bash
-php artisan vendor:publish --provider="TahirRasheed\MediaLibrary\MediaLibraryServiceProvider" --tag=config
+php artisan vendor:publish --provider="TahirRasheed\MediaLibrary\MediaLibraryServiceProvider" --tag=medialibrary-config
 ```
 
-### 3. Database
+### 3. Preparing the database
 
-Migrate your database.
+You need to publish the migration to create the media table:
+
+```bash
+php artisan vendor:publish --provider="TahirRasheed\MediaLibrary\MediaLibraryServiceProvider" --tag=medialibrary-migration
+```
+
+After that, you need to run migrations.
 
 ```bash
 php artisan migrate

@@ -4,6 +4,8 @@ namespace TahirRasheed\MediaLibrary;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Drivers\Imagick\Driver;
 use TahirRasheed\MediaLibrary\Models\Media;
 use TahirRasheed\MediaLibrary\Observers\MediaObserver;
 use TahirRasheed\MediaLibrary\View\Components\Dropzone;
@@ -18,9 +20,11 @@ class MediaLibraryServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/medialibrary.php', 'medialibrary'
-        );
+        if (! app()->configurationIsCached()) {
+            $this->mergeConfigFrom(
+                __DIR__.'/../config/medialibrary.php', 'medialibrary'
+            );
+        }
     }
 
     /**
@@ -30,13 +34,24 @@ class MediaLibraryServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'medialibrary');
 
-        $this->publishes([
-            __DIR__.'/../config/medialibrary.php' => config_path('medialibrary.php'),
-        ], 'config');
+        if (app()->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/medialibrary.php' => config_path('medialibrary.php'),
+            ], 'medialibrary-config');
+
+            $this->publishesMigrations([
+                __DIR__.'/../database/migrations' => database_path('migrations'),
+            ], 'medialibrary-migration');
+        }
+
+        if (config('medialibrary.image_driver') === 'imagick') {
+            config(['image.driver' => Driver::class]);
+        } else {
+            config(['image.driver' => GdDriver::class]);
+        }
 
         $this->loadViewComponentsAs('medialibrary', [
             FileUpload::class,
@@ -46,7 +61,7 @@ class MediaLibraryServiceProvider extends ServiceProvider
         Media::observe(MediaObserver::class);
 
         Blade::directive('mediaLibraryScript', function () {
-            return "<script src='".route('medialibrary.uploader')."?ver=2.4.6'></script>";
+            return "<script src='".route('medialibrary.uploader')."?ver=3.0.0'></script>";
         });
     }
 }
