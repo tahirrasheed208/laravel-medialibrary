@@ -8,6 +8,12 @@ return [
     'disk_name' => env('MEDIA_DISK', 'public'),
 
     /*
+     * Allow webp conversion.
+     * This will replace original image.
+     */
+    'webp_conversion' => false,
+
+    /*
      * The engine that should perform the image conversions.
      * Should be either `gd` or `imagick`.
      */

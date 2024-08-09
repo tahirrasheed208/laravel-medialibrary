@@ -8,6 +8,7 @@ use TahirRasheed\MediaLibrary\Exceptions\FileSizeTooBigException;
 use TahirRasheed\MediaLibrary\Exceptions\InvalidConversionException;
 use TahirRasheed\MediaLibrary\Jobs\MediaConversion;
 use TahirRasheed\MediaLibrary\Jobs\ThumbnailConversion;
+use TahirRasheed\MediaLibrary\Jobs\WebpConversion;
 use TahirRasheed\MediaLibrary\Models\Media;
 
 trait MediaHelper
@@ -102,6 +103,20 @@ trait MediaHelper
     protected function dispatchConversionJobs(Media $media)
     {
         if (! in_array($media->mime_type, $this->allowedMimeTypesForConversion())) {
+            return;
+        }
+
+        $webp_conversion = config('medialibrary.webp_conversion');
+
+        if ($webp_conversion) {
+            $mediaConversions = $this->model->mediaConversions;
+
+            if ($this->without_conversions) {
+                $mediaConversions = [];
+            }
+
+            WebpConversion::dispatch($media->id, $mediaConversions);
+
             return;
         }
 

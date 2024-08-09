@@ -5,6 +5,8 @@ namespace TahirRasheed\MediaLibrary\Conversions;
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\Models\Media;
 use Intervention\Image\Laravel\Facades\Image;
+use TahirRasheed\MediaLibrary\Jobs\MediaConversion;
+use TahirRasheed\MediaLibrary\Jobs\ThumbnailConversion;
 
 class ConversionHelper
 {
@@ -28,8 +30,16 @@ class ConversionHelper
 
         $image = $this->resizeMedia($original_image, $conversion);
 
+        $webp_conversion = config('medialibrary.webp_conversion');
+
+        if ($webp_conversion) {
+            $image = $image->toWebp();
+        } else {
+            $image = $image->encodeByMediaType();
+        }
+
         Storage::disk($this->media->disk)
-            ->put($this->media->getConversionPath($conversion->name), $image->encodeByMediaType()->toFilePointer(), 'public');
+            ->put($this->media->getConversionPath($conversion->name), $image->toFilePointer(), 'public');
 
         $this->updateConversionsAttribute($conversion->name);
     }
@@ -50,6 +60,36 @@ class ConversionHelper
         return $image->scaleDown(height: $conversion->height);
     }
 
+    public function convertOriginalImageToWebp(int $media_id, array $media_conversions = []): void
+    {
+        $this->media = Media::findOrFail($media_id);
+        $original_image_path = $this->media->getFilePath();
+
+        $original_image = Storage::disk($this->media->disk)
+            ->get($original_image_path);
+
+        $this->media->file_name = $this->generateFilenameForWebp();
+        $webp_path = $this->media->getConversionPath('original');
+
+        $image = Image::read($original_image)->toWebp();
+
+        Storage::disk($this->media->disk)
+            ->put($webp_path, $image->toFilePointer(), 'public');
+
+        $this->media->mime_type = Storage::disk($this->media->disk)->mimeType($webp_path);
+        $this->media->size = Storage::disk($this->media->disk)->size($webp_path);
+        $this->media->save();
+
+        Storage::disk($this->media->disk)->delete($original_image_path);
+
+        // generate conversions
+        ThumbnailConversion::dispatch($media_id);
+
+        if (!empty($media_conversions)) {
+            MediaConversion::dispatch($media_id, $media_conversions);
+        }
+    }
+
     public function generateThumbnailConversion(int $media_id): void
     {
         $thumbnail_enable = config('medialibrary.thumbnails.generate', true);
@@ -65,14 +105,22 @@ class ConversionHelper
         $width = config('medialibrary.thumbnails.width', 200);
         $height = config('medialibrary.thumbnails.height', 200);
 
+        $webp_conversion = config('medialibrary.webp_conversion');
+
         $original_image = Storage::disk($this->media->disk)
             ->get($this->media->getFilePath());
 
         $image = Image::read($original_image)
             ->cover($width, $height);
 
+        if ($webp_conversion) {
+            $image = $image->toWebp();
+        } else {
+            $image = $image->encodeByMediaType();
+        }
+
         Storage::disk($this->media->disk)
-            ->put($this->media->getConversionPath('thumbnail'), $image->encodeByMediaType()->toFilePointer(), 'public');
+            ->put($this->media->getConversionPath('thumbnail'), $image->toFilePointer(), 'public');
 
         $this->updateConversionsAttribute('thumbnail');
     }
@@ -93,5 +141,13 @@ class ConversionHelper
         if (! Storage::disk($this->media->disk)->exists($directory)) {
             Storage::disk($this->media->disk)->makeDirectory($directory);
         }
+    }
+
+    protected function generateFilenameForWebp()
+    {
+        $file_name = explode('.', $this->media->file_name);
+        $file_name = $file_name[0];
+
+        return "{$file_name}.webp";
     }
 }
