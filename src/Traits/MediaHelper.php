@@ -108,7 +108,7 @@ trait MediaHelper
 
         $webp_conversion = config('medialibrary.webp_conversion');
 
-        if ($webp_conversion) {
+        if ($webp_conversion && $media->mime_type !== 'image/webp') {
             $mediaConversions = $this->model->mediaConversions;
 
             if ($this->without_conversions) {
