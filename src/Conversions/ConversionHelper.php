@@ -78,6 +78,13 @@ class ConversionHelper
 
         $this->media->mime_type = Storage::disk($this->media->disk)->mimeType($webp_path);
         $this->media->size = Storage::disk($this->media->disk)->size($webp_path);
+
+        $conversions = [
+            'thumbnail' => $this->media->getFilePath(),
+        ];
+
+        $this->media->conversions = $conversions;
+
         $this->media->save();
 
         Storage::disk($this->media->disk)->delete($original_image_path);
