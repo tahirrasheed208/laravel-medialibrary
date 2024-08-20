@@ -11,27 +11,31 @@ class MediaUpload
 {
     use MediaHelper;
 
+    public string|null $title;
+
     public function __construct()
     {
         $this->disk = config('medialibrary.disk_name');
     }
 
-    public function handleMediaFromRequest(array $request, string $type, Model $model): MediaUpload
+    public function handleMediaFromRequest(array $request, string $type, Model $model, string|null $title = null): MediaUpload
     {
         $this->request = $request;
         $this->type = $type;
         $this->model = $model;
+        $this->title = $title;
 
         $this->validateModelRegisteredConversions();
 
         return $this;
     }
 
-    public function addMediaFromRequest(array $request, string $type, Model $model): MediaUpload
+    public function addMediaFromRequest(array $request, string $type, Model $model, string|null $title = null): MediaUpload
     {
         $this->request = $request;
         $this->type = $type;
         $this->model = $model;
+        $this->title = $title;
 
         $this->validateModelRegisteredConversions();
 
@@ -66,11 +70,12 @@ class MediaUpload
         return $this->upload($file);
     }
 
-    public function uploadFromLivewire(Model $model, string $type, $files, string $collection = '')
+    public function uploadFromLivewire(Model $model, string $type, $files, string|null $title = null, string $collection = '')
     {
         $this->model = $model;
         $this->type = $type;
         $this->collection = $collection;
+        $this->title = $title;
 
         if (! is_array($files)) {
             $files[] = $files;
@@ -89,10 +94,14 @@ class MediaUpload
 
         $file->store($this->getFileUploadPath(), $this->disk);
 
+        if (! $this->title) {
+            $this->title = $file->getClientOriginalName();
+        }
+
         $media = $this->model->attachments()->create([
             'type' => $this->type,
             'file_name' => $file->hashName(),
-            'name' => $file->getClientOriginalName(),
+            'name' => $this->title,
             'mime_type' => $file->getMimeType(),
             'size' => $file->getSize(),
             'disk' => $this->disk,

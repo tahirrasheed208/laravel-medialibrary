@@ -38,26 +38,26 @@ trait HasMedia
         return $this->morphMany(Media::class, 'imageable')->orderBy('sort_order');
     }
 
-    public function addMedia(UploadedFile $file, string $type = 'image'): MediaUpload
+    public function addMedia(UploadedFile $file, string $type = 'image', string|null $title = null): MediaUpload
     {
         $request = [$type => $file];
 
-        return (new MediaUpload)->addMediaFromRequest($request, $type, $this);
+        return (new MediaUpload)->addMediaFromRequest($request, $type, $this, $title);
     }
 
-    public function addMediaFromRequest(string $type = 'image'): MediaUpload
+    public function addMediaFromRequest(string $type = 'image', string|null $title = null): MediaUpload
     {
-        return (new MediaUpload)->addMediaFromRequest(request()->toArray(), $type, $this);
+        return (new MediaUpload)->addMediaFromRequest(request()->toArray(), $type, $this, $title);
     }
 
-    public function handleMediaFromRequest(string $type = 'image'): MediaUpload
+    public function handleMediaFromRequest(string $type = 'image', string|null $title = null): MediaUpload
     {
-        return (new MediaUpload)->handleMediaFromRequest(request()->toArray(), $type, $this);
+        return (new MediaUpload)->handleMediaFromRequest(request()->toArray(), $type, $this, $title);
     }
 
-    public function uploadFromLivewire($files, string $type = 'image')
+    public function uploadFromLivewire($files, string $type = 'image', string|null $title = null)
     {
-        return (new MediaUpload)->uploadFromLivewire($this, $type, $files);
+        return (new MediaUpload)->uploadFromLivewire($this, $type, $files, $title);
     }
 
     public function attachGalleryToModelFromRequest(string $type = 'gallery'): MediaUploadFromGallery
