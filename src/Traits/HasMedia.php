@@ -136,6 +136,17 @@ trait HasMedia
         }
     }
 
+    public function getFirstMediaTitle(string $type = 'image'): string
+    {
+        $media = $this->getMedia($type);
+
+        if (! $media) {
+            return '';
+        }
+
+        return $media->name;
+    }
+
     public function addMediaConversion(string $name): Conversion
     {
         $conversion = (new Conversion)->create($name);

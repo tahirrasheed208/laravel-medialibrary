@@ -19,6 +19,11 @@ class Media extends Model
         return $this->morphTo();
     }
 
+    public function getTitle()
+    {
+        return $this->name;
+    }
+
     public function getUrl(string $conversion = 'original')
     {
         return Storage::disk($this->disk)->url($this->getFilePath($conversion));
