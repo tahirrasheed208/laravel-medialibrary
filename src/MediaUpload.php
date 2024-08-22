@@ -66,6 +66,7 @@ class MediaUpload
         $this->model = $model;
         $this->type = $type;
         $this->collection = $collection;
+        $this->title = null;
 
         return $this->upload($file);
     }
