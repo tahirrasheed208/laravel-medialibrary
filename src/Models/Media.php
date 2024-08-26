@@ -34,30 +34,45 @@ class Media extends Model
         $conversions = $this->conversions;
 
         if ($key === 'original') {
-            return $this->getConversionPath($key);
+            return isset($conversions['original']) ? $conversions['original'] : $this->getConversionPath();
         }
 
-        $environment = config('app.env');
         $conversionNotAvailable = empty($conversions) || ! isset($conversions[$key]);
 
-        if ($environment === 'production' && $conversionNotAvailable) {
-            return $this->getConversionPath();
+        if (config('medialibrary.conversion_missing_exception')) {
+            throw new ConversionNotAvailableException();
         }
 
         if ($conversionNotAvailable) {
-            throw new ConversionNotAvailableException();
+            return isset($conversions['original']) ? $conversions['original'] : $this->getConversionPath();
         }
 
         return $conversions[$key];
     }
 
-    public function getConversionPath(string $key = 'original'): string
+    public function getConversionPath(string $key = 'original', bool $webp = false): string
     {
+        $filename = $this->getFileNameForExtension($webp);
+
         if (empty($this->collection_name)) {
-            return "{$key}/{$this->file_name}";
+            return "{$key}/{$filename}";
         }
 
-        return "{$this->collection_name}/{$key}/{$this->file_name}";
+        return "{$this->collection_name}/{$key}/{$filename}";
+    }
+
+    public function getOriginalFileUrl(): string
+    {
+        return Storage::disk($this->disk)->url($this->getOriginalFilePath());
+    }
+
+    public function getOriginalFilePath(): string
+    {
+        if (empty($this->collection_name)) {
+            return "original/{$this->file_name}";
+        }
+
+        return "{$this->collection_name}/original/{$this->file_name}";
     }
 
     public function toArray()
@@ -75,5 +90,16 @@ class Media extends Model
         $types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
         return in_array($this->mime_type, $types);
+    }
+
+    protected function getFileNameForExtension(bool $webp = false)
+    {
+        if (! $webp) {
+            return $this->file_name;
+        }
+
+        $filename = pathinfo($this->file_name, PATHINFO_FILENAME);
+
+        return "{$filename}.webp";
     }
 }

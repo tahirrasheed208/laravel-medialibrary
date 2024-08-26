@@ -14,6 +14,11 @@ return [
     'webp_conversion' => false,
 
     /*
+     * Webp conversion quality.
+     */
+    'webp_quality' => 100,
+
+    /*
      * The engine that should perform the image conversions.
      * Should be either `gd` or `imagick`.
      */
@@ -62,4 +67,10 @@ return [
         'collection' => 'settings',
         'disk' => env('MEDIA_DISK', 'public'),
     ],
+
+    /*
+     * Enable exception if conversion not avialable.
+     * Please don't enable this on production.`
+     */
+    'conversion_missing_exception' => false,
 ];

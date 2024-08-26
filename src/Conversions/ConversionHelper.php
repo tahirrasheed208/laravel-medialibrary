@@ -31,17 +31,18 @@ class ConversionHelper
         $image = $this->resizeMedia($original_image, $conversion);
 
         $webp_conversion = config('medialibrary.webp_conversion');
+        $webp_quality = config('medialibrary.webp_quality') ?: 75;
 
         if ($webp_conversion) {
-            $image = $image->toWebp();
+            $image = $image->toWebp($webp_quality);
         } else {
             $image = $image->encodeByMediaType();
         }
 
         Storage::disk($this->media->disk)
-            ->put($this->media->getConversionPath($conversion->name), $image->toFilePointer(), 'public');
+            ->put($this->media->getConversionPath($conversion->name, $webp_conversion), $image->toFilePointer(), 'public');
 
-        $this->updateConversionsAttribute($conversion->name);
+        $this->updateConversionsAttribute($conversion->name, $webp_conversion);
     }
 
     protected function resizeMedia(string $original_image, Conversion $conversion)
@@ -68,26 +69,17 @@ class ConversionHelper
         $original_image = Storage::disk($this->media->disk)
             ->get($original_image_path);
 
-        $this->media->file_name = $this->generateFilenameForWebp();
-        $webp_path = $this->media->getConversionPath('original');
+        $webp_path = $this->media->getConversionPath('original', true);
 
-        $image = Image::read($original_image)->toWebp();
+        $webp_quality = config('medialibrary.webp_quality') ?: 75;
+        $webp_quality = $webp_quality == 100 ? 99 : $webp_quality;
+
+        $image = Image::read($original_image)->toWebp($webp_quality);
 
         Storage::disk($this->media->disk)
             ->put($webp_path, $image->toFilePointer(), 'public');
 
-        $this->media->mime_type = Storage::disk($this->media->disk)->mimeType($webp_path);
-        $this->media->size = Storage::disk($this->media->disk)->size($webp_path);
-
-        $conversions = [
-            'thumbnail' => $this->media->getFilePath(),
-        ];
-
-        $this->media->conversions = $conversions;
-
-        $this->media->save();
-
-        Storage::disk($this->media->disk)->delete($original_image_path);
+        $this->updateConversionsAttribute('original', true);
 
         // generate conversions
         ThumbnailConversion::dispatch($media_id);
@@ -113,6 +105,7 @@ class ConversionHelper
         $height = config('medialibrary.thumbnails.height', 200);
 
         $webp_conversion = config('medialibrary.webp_conversion');
+        $webp_quality = config('medialibrary.webp_quality') ?: 75;
 
         $original_image = Storage::disk($this->media->disk)
             ->get($this->media->getFilePath());
@@ -121,21 +114,21 @@ class ConversionHelper
             ->cover($width, $height);
 
         if ($webp_conversion) {
-            $image = $image->toWebp();
+            $image = $image->toWebp($webp_quality);
         } else {
             $image = $image->encodeByMediaType();
         }
 
         Storage::disk($this->media->disk)
-            ->put($this->media->getConversionPath('thumbnail'), $image->toFilePointer(), 'public');
+            ->put($this->media->getConversionPath('thumbnail', $webp_conversion), $image->toFilePointer(), 'public');
 
-        $this->updateConversionsAttribute('thumbnail');
+        $this->updateConversionsAttribute('thumbnail', $webp_conversion);
     }
 
-    protected function updateConversionsAttribute(string $key = 'original'): void
+    protected function updateConversionsAttribute(string $key = 'original', bool $webp = false): void
     {
         $conversions = $this->media->conversions;
-        $conversions[$key] = $this->media->getConversionPath($key);
+        $conversions[$key] = $this->media->getConversionPath($key, $webp);
 
         $this->media->conversions = $conversions;
         $this->media->save();
@@ -148,13 +141,5 @@ class ConversionHelper
         if (! Storage::disk($this->media->disk)->exists($directory)) {
             Storage::disk($this->media->disk)->makeDirectory($directory);
         }
-    }
-
-    protected function generateFilenameForWebp()
-    {
-        $file_name = explode('.', $this->media->file_name);
-        $file_name = $file_name[0];
-
-        return "{$file_name}.webp";
     }
 }
