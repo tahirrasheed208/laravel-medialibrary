@@ -39,7 +39,7 @@ class Media extends Model
 
         $conversionNotAvailable = empty($conversions) || ! isset($conversions[$key]);
 
-        if (config('medialibrary.conversion_missing_exception')) {
+        if ($conversionNotAvailable && config('medialibrary.conversion_missing_exception')) {
             throw new ConversionNotAvailableException();
         }
 

@@ -16,7 +16,7 @@ return [
     /*
      * Webp conversion quality.
      */
-    'webp_quality' => 100,
+    'webp_quality' => 80,
 
     /*
      * The engine that should perform the image conversions.
