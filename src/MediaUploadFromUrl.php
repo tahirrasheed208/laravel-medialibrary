@@ -38,7 +38,10 @@ class MediaUploadFromUrl
         $this->collection = $collection;
 
         $name = pathinfo($this->url, PATHINFO_BASENAME);
-        $file_name = uniqid() . '_' . $name;
+        $file_name = pathinfo($this->url, PATHINFO_FILENAME);
+        $extension = pathinfo($this->url, PATHINFO_EXTENSION);
+
+        $file_name = $this->makeFilenameUnique($file_name, $extension);
         $file_path = $this->getFileUploadPath() . DIRECTORY_SEPARATOR . $file_name;
 
         if (! $this->title) {

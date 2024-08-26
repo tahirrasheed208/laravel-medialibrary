@@ -4,6 +4,7 @@ namespace TahirRasheed\MediaLibrary;
 
 use Illuminate\Http\UploadedFile;
 use TahirRasheed\MediaLibrary\Jobs\ThumbnailConversion;
+use TahirRasheed\MediaLibrary\Jobs\WebpConversion;
 use TahirRasheed\MediaLibrary\Models\Media;
 use TahirRasheed\MediaLibrary\Traits\MediaHelper;
 
@@ -40,11 +41,13 @@ class MediaUploadForSetting
     {
         $this->checkMaxFileUploadSize($file);
 
-        $file->store($this->getFileUploadPath(), $this->disk);
+        $filename = $this->getUploadedFileUniqueName($file);
+
+        $file->storeAs($this->getFileUploadPath(), $filename, $this->disk);
 
         $media = Media::create([
             'type' => $type,
-            'file_name' => $file->hashName(),
+            'file_name' => $filename,
             'name' => $file->getClientOriginalName(),
             'mime_type' => $file->getMimeType(),
             'size' => $file->getSize(),
@@ -55,12 +58,18 @@ class MediaUploadForSetting
         $this->setDefaultConversions($media);
 
         if (in_array($media->mime_type, $this->allowedMimeTypesForConversion())) {
-            ThumbnailConversion::dispatch($media->id);
+            $webp_conversion = config('medialibrary.webp_conversion');
+
+            if ($webp_conversion && $media->mime_type !== 'image/webp') {
+                WebpConversion::dispatch($media->id, []);
+            } else {
+                ThumbnailConversion::dispatch($media->id);
+            }
         }
 
         return [
             'media_id' => $media->id,
-            'file_name' => $file->hashName(),
+            'file_name' => $filename,
         ];
     }
 

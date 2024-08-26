@@ -5,11 +5,11 @@ namespace TahirRasheed\MediaLibrary\Services;
 use Illuminate\Support\Facades\Storage;
 use TahirRasheed\MediaLibrary\MediaUpload;
 use TahirRasheed\MediaLibrary\Models\Media;
+use TahirRasheed\MediaLibrary\Traits\MediaHelper;
 
 class DropzoneService
 {
-    protected string $disk;
-    protected array $request;
+    use MediaHelper;
 
     public function __construct()
     {
@@ -68,12 +68,14 @@ class DropzoneService
         $response = [];
 
         foreach ($this->request['file'] as $file) {
-            $file->store($this->temporaryPath(), $this->disk);
+            $filename = $this->getUploadedFileUniqueName($file);
+
+            $file->storeAs($this->temporaryPath(), $filename, $this->disk);
 
             $response[] = [
                 'media_id' => 0,
                 'file_name' => $file->getClientOriginalName(),
-                'new_name' => $file->hashName(),
+                'new_name' => $filename,
             ];
         }
 

@@ -68,6 +68,8 @@ class MediaUpload
         $this->collection = $collection;
         $this->title = null;
 
+        $this->validateModelRegisteredConversions();
+
         return $this->upload($file);
     }
 
@@ -82,6 +84,8 @@ class MediaUpload
             $files[] = $files;
         }
 
+        $this->validateModelRegisteredConversions();
+
         foreach ($files as $file) {
             $this->upload($file);
         }
@@ -93,7 +97,9 @@ class MediaUpload
     {
         $this->checkMaxFileUploadSize($file);
 
-        $file->store($this->getFileUploadPath(), $this->disk);
+        $filename = $this->getUploadedFileUniqueName($file);
+
+        $file->storeAs($this->getFileUploadPath(), $filename, $this->disk);
 
         if (! $this->title) {
             $this->title = $file->getClientOriginalName();
@@ -101,7 +107,7 @@ class MediaUpload
 
         $media = $this->model->attachments()->create([
             'type' => $this->type,
-            'file_name' => $file->hashName(),
+            'file_name' => $filename,
             'name' => $this->title,
             'mime_type' => $file->getMimeType(),
             'size' => $file->getSize(),

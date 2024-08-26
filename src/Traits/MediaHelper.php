@@ -62,6 +62,7 @@ trait MediaHelper
     protected function setDefaultConversions(Media $media)
     {
         $conversions = [
+            'original' => $media->getFilePath(),
             'thumbnail' => $media->getFilePath(),
         ];
 
@@ -136,5 +137,21 @@ trait MediaHelper
     protected function allowedMimeTypesForConversion()
     {
         return ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    }
+
+    protected function getUploadedFileUniqueName(UploadedFile $file)
+    {
+        $originalName = $file->getClientOriginalName();
+        $filename = pathinfo($originalName, PATHINFO_FILENAME);
+
+        return $this->makeFilenameUnique($filename, $file->getClientOriginalExtension());
+    }
+
+    protected function makeFilenameUnique(string $filename, string $extension)
+    {
+        $filename = Str::slug($filename);
+        $filename = Str::limit($filename, 200, '');
+
+        return $filename . '_' . time() . '.' . $extension;
     }
 }
