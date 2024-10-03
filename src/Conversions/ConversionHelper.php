@@ -49,7 +49,7 @@ class ConversionHelper
     {
         if ($conversion->crop) {
             return Image::read($original_image)
-                ->resizeDown($conversion->width, $conversion->height, $conversion->position);
+                ->cover($conversion->width, $conversion->height, $conversion->position);
         }
 
         $image = Image::read($original_image);
