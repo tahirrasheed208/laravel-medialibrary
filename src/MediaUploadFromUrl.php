@@ -78,6 +78,11 @@ class MediaUploadFromUrl
         }
 
         $image = getimagesize($file);
+
+        if (empty($image) || ! isset($image['mime'])) {
+            return true;
+        }
+
         $mime = strtolower(substr($image['mime'], 0, 5));
 
         if ($mime !== 'image') {
