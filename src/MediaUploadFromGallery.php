@@ -56,6 +56,7 @@ class MediaUploadFromGallery
             $media = $this->model->attachments()->create([
                 'type' => $this->type,
                 'file_name' => $file,
+                'name' => $file,
                 'mime_type' => Storage::disk($this->disk)->mimeType($new_path),
                 'size' => Storage::disk($this->disk)->size($new_path),
                 'disk' => $this->disk,
