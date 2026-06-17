@@ -55,6 +55,12 @@ return [
     ],
 
     /*
+     * UI theme for the file upload components.
+     * Supported: 'bootstrap', 'tailwind'
+     */
+    'theme' => 'bootstrap',
+
+    /*
      * Define your blade stack name
      * where we push our uploader scripts.
      */
