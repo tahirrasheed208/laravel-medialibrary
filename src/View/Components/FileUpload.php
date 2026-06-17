@@ -70,7 +70,7 @@ class FileUpload extends Component
             return Arr::toCssClasses([
                 'lm-img-preview',
                 'mb-2',
-                'hidden' => $hidden,
+                'd-none' => $hidden,
             ]);
         }
 
@@ -89,7 +89,7 @@ class FileUpload extends Component
             return Arr::toCssClasses([
                 'lm-file-preview',
                 'mb-2',
-                'hidden' => $hidden,
+                'd-none' => $hidden,
             ]);
         }
 
@@ -113,7 +113,7 @@ class FileUpload extends Component
                 'rounded',
                 'hover:bg-blue-700',
                 'lm-upload-button',
-                'hidden' => $this->file,
+                'd-none' => $this->file,
             ]);
         }
 
@@ -139,7 +139,7 @@ class FileUpload extends Component
                 'rounded',
                 'hover:bg-red-700',
                 'lm-remove-button',
-                'hidden' => !$this->file,
+                'd-none' => !$this->file,
             ]);
         }
 
